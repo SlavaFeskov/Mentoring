@@ -1,0 +1,5 @@
+D:\Mentoring\TestProject\bin\Release\TestProject.dll
+D:\Mentoring\TestProject\bin\Release\TestProject.pdb
+D:\Mentoring\TestProject\obj\Release\TestProject.csprojAssemblyReference.cache
+D:\Mentoring\TestProject\obj\Release\TestProject.dll
+D:\Mentoring\TestProject\obj\Release\TestProject.pdb

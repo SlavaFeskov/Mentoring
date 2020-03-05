@@ -1,0 +1,10 @@
+D:\Mentoring\NugetProject\bin\Debug\NugetProject.dll
+D:\Mentoring\NugetProject\bin\Debug\NugetProject.pdb
+D:\Mentoring\NugetProject\bin\Debug\Newtonsoft.Json.dll
+D:\Mentoring\NugetProject\bin\Debug\Newtonsoft.Json.xml
+D:\Mentoring\NugetProject\obj\Debug\NugetProject.csprojAssemblyReference.cache
+D:\Mentoring\NugetProject\obj\Debug\Interop.WMPLib.dll
+D:\Mentoring\NugetProject\obj\Debug\NugetProject.csproj.ResolveComReference.cache
+D:\Mentoring\NugetProject\obj\Debug\NugetProject.csproj.CopyComplete
+D:\Mentoring\NugetProject\obj\Debug\NugetProject.dll
+D:\Mentoring\NugetProject\obj\Debug\NugetProject.pdb

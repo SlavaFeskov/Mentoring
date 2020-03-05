@@ -1,0 +1,9 @@
+C:\Users\Viachaslau Fiaskou\source\repos\Task1.1\NetStandardCL\bin\Debug\netstandard2.0\NetStandardCL.deps.json
+C:\Users\Viachaslau Fiaskou\source\repos\Task1.1\NetStandardCL\bin\Debug\netstandard2.0\NetStandardCL.dll
+C:\Users\Viachaslau Fiaskou\source\repos\Task1.1\NetStandardCL\bin\Debug\netstandard2.0\NetStandardCL.pdb
+C:\Users\Viachaslau Fiaskou\source\repos\Task1.1\NetStandardCL\obj\Debug\netstandard2.0\NetStandardCL.csprojAssemblyReference.cache
+C:\Users\Viachaslau Fiaskou\source\repos\Task1.1\NetStandardCL\obj\Debug\netstandard2.0\NetStandardCL.csproj.CoreCompileInputs.cache
+C:\Users\Viachaslau Fiaskou\source\repos\Task1.1\NetStandardCL\obj\Debug\netstandard2.0\NetStandardCL.AssemblyInfoInputs.cache
+C:\Users\Viachaslau Fiaskou\source\repos\Task1.1\NetStandardCL\obj\Debug\netstandard2.0\NetStandardCL.AssemblyInfo.cs
+C:\Users\Viachaslau Fiaskou\source\repos\Task1.1\NetStandardCL\obj\Debug\netstandard2.0\NetStandardCL.dll
+C:\Users\Viachaslau Fiaskou\source\repos\Task1.1\NetStandardCL\obj\Debug\netstandard2.0\NetStandardCL.pdb

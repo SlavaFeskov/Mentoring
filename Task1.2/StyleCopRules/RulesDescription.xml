@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<SourceAnalyzer Name="MentoringCustomRules">
+  <Description>
+    Custom rules for mentoring program
+  </Description>
+  <Rules>
+    <Rule Name="ControllerInheritanceRule" CheckId="EP0001">
+      <Context>Controllers should have 'Controller' suffix</Context>
+      <Description>Controllers should have 'Controller' suffix</Description>
+    </Rule>
+    <Rule Name="EntityClassShouldHaveDataContractAttributeRule" CheckId="EP0009">
+      <Context>Entity classes should have DataContract attribute</Context>
+      <Description>Entity classes should have DataContract attribute</Description>
+    </Rule>
+    <Rule Name="AuthorizePublicMethodRule" CheckId="EP0002">
+      <Context>Public methods in controllers should have authorize attribute </Context>
+      <Description>Public methods in controllers should have authorize attribute</Description>
+    </Rule>
+    <Rule Name="AuthorizeClassRule" CheckId="EP0003">
+      <Context>Controllers should have authorize attribute</Context>
+      <Description>Controllers should have authorize attribute</Description>
+    </Rule>
+    <Rule Name="EntityClassMustBePublicRule" CheckId="EP0004">
+      <Context>Entity class should have public accessor</Context>
+      <Description>Entity class should have public accessor</Description>
+    </Rule>
+    <Rule Name="EntityClassShouldHaveIdPropertyRule" CheckId="EP0005">
+      <Context>Entity class should have Id property</Context>
+      <Description>Entity class should have Id property</Description>
+    </Rule>
+    <Rule Name="EntityClassShouldHaveNamePropertyRule" CheckId="EP0006">
+      <Context>Entity class should have Name property</Context>
+      <Description>Entity class should have Name property</Description>
+    </Rule>
+    <Rule Name="IdPropertyMustBePublicRule" CheckId="EP0007">
+      <Context>Id property in entity class should have public accessor</Context>
+      <Description>Id property in entity class should have public accessor</Description>
+    </Rule>
+    <Rule Name="NamePropertyMustBePublicRule" CheckId="EP0008">
+      <Context>Name property in entity class should have public accessor</Context>
+      <Description>Name property in entity class should have public accessor</Description>
+    </Rule>
+  </Rules>
+</SourceAnalyzer>
