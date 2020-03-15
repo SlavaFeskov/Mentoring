@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using MyIoC.Attributes;
+using MyIoC.Exceptions;
 using MyIoC.Models;
-using MyIoC.Sample;
 using MyIoC.Services;
-using MyIoC.Utils;
 
 namespace MyIoC
 {
@@ -25,15 +24,15 @@ namespace MyIoC
         {
             foreach (var type in assembly.GetTypes().Where(t => t.IsClass))
             {
-                if (type.HasCustomAttribute<ImportConstructorAttribute>())
+                if (type.GetCustomAttribute<ImportConstructorAttribute>() != null)
                 {
                     RegisterTypeAsSelf(type);
                     continue;
                 }
 
                 var hasImportAttribute =
-                    type.GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance)
-                        .Any(pi => pi.HasCustomAttribute<ImportAttribute>());
+                    type.GetProperties()
+                        .Any(pi => pi.GetCustomAttribute<ImportAttribute>() != null);
 
                 if (hasImportAttribute)
                 {
@@ -41,18 +40,21 @@ namespace MyIoC
                     continue;
                 }
 
-                if (type.HasCustomAttribute<ExportAttribute>())
+                var exportAttribute = type.GetCustomAttribute<ExportAttribute>();
+                if (exportAttribute != null)
                 {
-                    var exportAttribute = type.GetCustomAttribute<ExportAttribute>(true);
-                    var typ = typeof(CustomerDal);
-                    var isDal = type.FullName == typ.FullName;
-                    var eq = typ == type;
-                    var t = typeof(CustomerDal).GetCustomAttribute<ExportAttribute>();
-                    //RegisterType(type, exportAttribute.Contract ?? type);
+                    RegisterType(type, exportAttribute.Contract ?? type);
                 }
             }
 
-            _validationService.ValidateDependencies(_registeredTypes.ToList());
+            var validationResults = _validationService.ValidateDependencies(_registeredTypes.ToList());
+            foreach (var validationResult in validationResults)
+            {
+                if (!validationResult.ValidationPassed)
+                {
+                    throw new DependenciesNotFoundException(validationResult);
+                }
+            }
         }
 
         public void RegisterTypeAsSelf(Type type) => RegisterType(type, type);
@@ -64,7 +66,7 @@ namespace MyIoC
                 if (_registeredTypes.All(rt => rt.Type != type))
                 {
                     var registerType = new RegistrationType(type, baseType);
-                    _validationService.UpdateRegistrationType(registerType);
+                    _validationService.SetRegisterTypeKind(registerType);
                     _registeredTypes.Add(registerType);
                 }
             }
@@ -72,6 +74,11 @@ namespace MyIoC
 
         public object CreateInstance(Type type)
         {
+            if (!_validationService.IsTypeRegistered(_registeredTypes, type))
+            {
+                throw new TypeNotRegisteredException(type);
+            }
+
             var registeredType = _registeredTypes.SingleOrDefault(rt => rt.Type == type);
             if (registeredType == null)
             {
@@ -80,20 +87,20 @@ namespace MyIoC
 
             if (registeredType.TypeKind == TypeKind.Export)
             {
-                var newInstance = Activator.CreateInstance(registeredType.Type);
-                return Convert.ChangeType(newInstance, registeredType.BaseType);
+                return Activator.CreateInstance(registeredType.Type);
             }
 
-            if (!_validationService.ValidateDependencies(registeredType))
+            var validationResult = _validationService.ValidateDependencies(_registeredTypes, registeredType);
+            if (!validationResult.ValidationPassed)
             {
-                return null; // throw
+                throw new DependenciesNotFoundException(validationResult);
             }
 
             if (registeredType.TypeKind == TypeKind.ImportViaConstructor)
             {
                 var dependentInstances = GetDependentInstances(registeredType);
-                var resultInstance = Activator.CreateInstance(registeredType.Type, dependentInstances);
-                return Convert.ChangeType(resultInstance, registeredType.BaseType);
+                var constructor = registeredType.Type.GetConstructors().Last();
+                return constructor.Invoke(dependentInstances.ToArray());
             }
 
             if (registeredType.TypeKind == TypeKind.ImportViaProperty)
@@ -107,7 +114,7 @@ namespace MyIoC
                     properties[i].SetValue(resultInstance, dependentInstances[i]);
                 }
 
-                return Convert.ChangeType(resultInstance, registeredType.BaseType);
+                return resultInstance;
             }
 
             return null;
@@ -115,22 +122,26 @@ namespace MyIoC
 
         private IEnumerable<object> GetDependentInstances(RegistrationType registeredType)
         {
-            var dependentTypes =
-                registeredType.DependentTypes.Select(dt => _registeredTypes.Single(rt => rt.Type == dt));
+            var dependentTypes = new List<RegistrationType>();
+            foreach (var dependentType in registeredType.DependentTypes)
+            {
+                var type = _registeredTypes.FirstOrDefault(rt => rt.BaseType == dependentType);
+                if (type != null)
+                {
+                    dependentTypes.Add(type);
+                }
+            }
+
             var dependentInstances = new List<object>();
             foreach (var dependentType in dependentTypes)
             {
                 var newInstance = Activator.CreateInstance(dependentType.Type);
-                var correctTypeInstance = Convert.ChangeType(newInstance, dependentType.BaseType);
-                dependentInstances.Add(correctTypeInstance);
+                dependentInstances.Add(newInstance);
             }
 
             return dependentInstances;
         }
 
-        public T CreateInstance<T>()
-        {
-            return default;
-        }
+        public T CreateInstance<T>() => (T) CreateInstance(typeof(T));
     }
 }

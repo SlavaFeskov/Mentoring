@@ -2,5 +2,6 @@
 {
     public interface ICustomerDal
     {
+        void Print();
     }
 }

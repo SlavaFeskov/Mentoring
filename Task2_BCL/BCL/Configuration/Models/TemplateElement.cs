@@ -14,6 +14,8 @@ namespace BCL.Configuration.Models
 
         [ConfigurationProperty("addDate")] public bool AddDate => (bool) this["addDate"];
 
+        [ConfigurationProperty("dateFormat")] public string DateFormat => (string) this["dateFormat"];
+
         public override string ToString()
         {
             return $"{FileRegex} - {DestinationDirectory}";

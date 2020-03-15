@@ -91,7 +91,8 @@ namespace BCL
                     if (ruleToApply.AddDate)
                     {
                         newFileName =
-                            $"{Path.GetFileNameWithoutExtension(newFileName)}_{DateTime.Now.ToShortDateString()}{Path.GetExtension(newFileName)}";
+                            $"{Path.GetFileNameWithoutExtension(newFileName)}_" +
+                            $"{DateTime.Now.ToString(ruleToApply.DateFormat)}{Path.GetExtension(newFileName)}";
                     }
                 }
 
