@@ -7,19 +7,16 @@ namespace ExceptionProject
     {
         static void Main(string[] args)
         {
-            Console.WriteLine(Converter.ConvertString("248gdfg28sdg5"));
-            while (true)
+            try
             {
-                var line = Console.ReadLine();
-                try
-                {
-                    Console.WriteLine(line[0]);
-                }
-                catch (IndexOutOfRangeException)
-                {
-                    Console.WriteLine("Exception occured! Empty string was entered.");
-                }
+                Console.WriteLine(Converter.ConvertString("248gdfg28sdg5"));
             }
+            catch (StringConverterException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+            Console.ReadKey();
         }
     }
 }
