@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using MyIoC.Attributes;
-using MyIoC.Exceptions;
-using MyIoC.Models;
-using MyIoC.Services;
+using IOCContainer.Attributes;
+using IOCContainer.Exceptions;
+using IOCContainer.Models;
+using IOCContainer.Services;
 
-namespace MyIoC
+namespace IOCContainer
 {
     public class Container
     {
@@ -79,7 +79,7 @@ namespace MyIoC
                 throw new TypeNotRegisteredException(type);
             }
 
-            var registeredType = _registeredTypes.SingleOrDefault(rt => rt.Type == type);
+            var registeredType = _registeredTypes.SingleOrDefault(rt => rt.BaseType == type);
             if (registeredType == null)
             {
                 return null;

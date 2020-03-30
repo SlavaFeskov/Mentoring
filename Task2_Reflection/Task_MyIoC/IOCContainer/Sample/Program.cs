@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace MyIoC.Sample
+namespace IOCContainer.Sample
 {
     public class Program
     {

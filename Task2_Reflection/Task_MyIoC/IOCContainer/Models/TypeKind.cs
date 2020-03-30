@@ -1,4 +1,4 @@
-﻿namespace MyIoC.Models
+﻿namespace IOCContainer.Models
 {
     public enum TypeKind
     {

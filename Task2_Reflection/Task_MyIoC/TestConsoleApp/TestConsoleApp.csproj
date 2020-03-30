@@ -50,9 +50,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MyIoC\MyIoC.csproj">
-      <Project>{e4159eab-85b1-4816-8de1-97c098825c3d}</Project>
-      <Name>MyIoC</Name>
+    <ProjectReference Include="..\IOCContainer\IOCContainer.csproj">
+      <Project>{25f23234-2e64-4af5-845f-f9a80f970fe3}</Project>
+      <Name>IOCContainer</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

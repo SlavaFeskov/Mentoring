@@ -1,4 +1,4 @@
-﻿namespace MyIoC.Sample
+﻿namespace IOCContainer.Sample
 {
     public interface ICustomerDal
     {

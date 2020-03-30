@@ -1,6 +1,6 @@
-﻿using MyIoC.Attributes;
+﻿using IOCContainer.Attributes;
 
-namespace MyIoC.Sample
+namespace IOCContainer.Sample
 {
     [ImportConstructor]
     public class CustomerBll

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MyIoC.Attributes
+namespace IOCContainer.Attributes
 {
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
     public class ImportAttribute : Attribute

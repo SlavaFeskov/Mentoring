@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
-using MyIoC.Models;
+using IOCContainer.Models;
 
-namespace MyIoC.Exceptions
+namespace IOCContainer.Exceptions
 {
     public class DependenciesNotFoundException : Exception
     {

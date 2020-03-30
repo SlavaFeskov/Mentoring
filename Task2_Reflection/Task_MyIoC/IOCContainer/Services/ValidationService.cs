@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using MyIoC.Attributes;
-using MyIoC.Exceptions;
-using MyIoC.Models;
+using IOCContainer.Attributes;
+using IOCContainer.Models;
 
-namespace MyIoC.Services
+namespace IOCContainer.Services
 {
     public class ValidationService
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MyIoC.Exceptions
+namespace IOCContainer.Exceptions
 {
     public class TypeNotRegisteredException : Exception
     {

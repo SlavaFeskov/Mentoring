@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MyIoC.Models
+namespace IOCContainer.Models
 {
     public class RegistrationType
     {

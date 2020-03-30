@@ -1,7 +1,7 @@
 ﻿using System;
-using MyIoC.Attributes;
+using IOCContainer.Attributes;
 
-namespace MyIoC.Sample
+namespace IOCContainer.Sample
 {
     [Export(typeof(ICustomerDal))]
     public class CustomerDal : ICustomerDal

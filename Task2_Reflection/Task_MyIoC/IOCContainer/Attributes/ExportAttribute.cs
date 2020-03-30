@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MyIoC.Attributes
+namespace IOCContainer.Attributes
 {
     [AttributeUsage(AttributeTargets.Class)]
     public class ExportAttribute : Attribute
