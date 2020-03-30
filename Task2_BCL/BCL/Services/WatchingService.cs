@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using BCL.Rules.Abstractions;
 using BCL.Services.Abstractions;
 
 namespace BCL.Services
@@ -11,8 +10,6 @@ namespace BCL.Services
     {
         private readonly CancellationTokenSource _cancellationTokenSource;
         private readonly CancellationToken _token;
-        private readonly IRuleValidator _ruleValidator;
-        private readonly IFileWorker _fileWorker;
         private readonly IWatcher _watcher;
 
         public event EventHandler<FileWatcherEventArgs> FileAdded
@@ -23,20 +20,18 @@ namespace BCL.Services
 
         public event EventHandler<FileWatcherEventArgs> RuleFoundNotFound
         {
-            add => _ruleValidator.RuleFoundNotFound += value;
-            remove => _ruleValidator.RuleFoundNotFound -= value;
+            add => _watcher.RuleFoundNotFound += value;
+            remove => _watcher.RuleFoundNotFound -= value;
         }
 
         public event EventHandler<FileWatcherEventArgs> FileMove
         {
-            add => _fileWorker.FileMove += value;
-            remove => _fileWorker.FileMove -= value;
+            add => _watcher.FileMove += value;
+            remove => _watcher.FileMove -= value;
         }
 
-        public WatchingService(IRuleValidator ruleValidator, IFileWorker fileWorker, IWatcher watcher)
+        public WatchingService(IWatcher watcher)
         {
-            _ruleValidator = ruleValidator;
-            _fileWorker = fileWorker;
             _watcher = watcher;
             _cancellationTokenSource = new CancellationTokenSource();
             _token = _cancellationTokenSource.Token;

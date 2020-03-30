@@ -20,6 +20,18 @@ namespace BCL.Services
 
         public event EventHandler<FileWatcherEventArgs> FileAdded;
 
+        public event EventHandler<FileWatcherEventArgs> RuleFoundNotFound
+        {
+            add => _ruleValidator.RuleFoundNotFound += value;
+            remove => _ruleValidator.RuleFoundNotFound -= value;
+        }
+
+        public event EventHandler<FileWatcherEventArgs> FileMove
+        {
+            add => _fileWorker.FileMove += value;
+            remove => _fileWorker.FileMove -= value;
+        }
+
         public void Watch(string path, CancellationToken token)
         {
             using (var fsWatcher = new System.IO.FileSystemWatcher())
@@ -36,7 +48,7 @@ namespace BCL.Services
         private void FsWatcher_Created(object sender, FileSystemEventArgs e)
         {
             OnFileAdded(new FileWatcherEventArgs
-                { Message = string.Format(StringResources.FileWasAdded, e.Name, Path.GetDirectoryName(e.FullPath)) });
+                {Message = string.Format(StringResources.FileWasAdded, e.Name, Path.GetDirectoryName(e.FullPath))});
 
             var ruleToApply = _ruleValidator.CheckForRuleToApply(e.Name);
             var newFilePath = _fileWorker.GetNewFilePath(e.FullPath, ruleToApply);

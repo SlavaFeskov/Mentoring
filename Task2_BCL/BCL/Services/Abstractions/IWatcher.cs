@@ -7,6 +7,10 @@ namespace BCL.Services.Abstractions
     {
         event EventHandler<FileWatcherEventArgs> FileAdded;
 
+        event EventHandler<FileWatcherEventArgs> RuleFoundNotFound;
+
+        event EventHandler<FileWatcherEventArgs> FileMove;
+
         void Watch(string path, CancellationToken token);
     }
 }
