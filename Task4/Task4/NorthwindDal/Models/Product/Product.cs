@@ -1,7 +1,7 @@
 ﻿
 // ReSharper disable InconsistentNaming
 
-namespace NorthwindDal.Models
+namespace NorthwindDal.Models.Product
 {
     public class Product
     {

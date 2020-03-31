@@ -57,6 +57,7 @@ namespace NorthwindDal.Repositories.Order
         public int Update(int orderId, IDictionary<string, object> values)
         {
             var orderInDb = GetOrderById(orderId);
+            values.Remove("OrderID");
             ThrowExceptionIfOrderInProgressOrCompletedStatusIsUpdated(orderInDb);
             ThrowExceptionIfOrderDateOrShippedDateIsBeingUpdatedExplicitly(values);
 
@@ -85,7 +86,7 @@ namespace NorthwindDal.Repositories.Order
         public int Delete(int orderId)
         {
             var orderInDb = GetOrderById(orderId);
-            ThrowExceptionIfOrderInDeletedStateIsBeingDeleted(orderInDb);
+            ThrowExceptionIfOrderInCompletedStateIsBeingDeleted(orderInDb);
 
             using var connection = _connectionService.CreateAndOpenConnection();
             using var command = _commandBuilder.BuildDeleteCommand(connection, OrdersTableName,
@@ -157,7 +158,7 @@ namespace NorthwindDal.Repositories.Order
             }
         }
 
-        private void ThrowExceptionIfOrderInDeletedStateIsBeingDeleted(Models.Order.Order order)
+        private void ThrowExceptionIfOrderInCompletedStateIsBeingDeleted(Models.Order.Order order)
         {
             if (order.OrderState == OrderState.Completed)
             {

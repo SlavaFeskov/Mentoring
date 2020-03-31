@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using NorthwindDal.Models.Order;
 
 // ReSharper disable StringLiteralTypo
@@ -8,11 +9,11 @@ namespace Tests.DataProviders
 {
     public static class OrderDataProvider
     {
-        public static IEnumerable<Order> GetOrders()
+        public static IEnumerable<KeyValuePair<OrderState, Order>> GetOrders()
         {
-            return new List<Order>
+            return new List<KeyValuePair<OrderState, Order>>
             {
-                new Order
+                new KeyValuePair<OrderState, Order>(OrderState.InProgress, new Order
                 {
                     OrderID = 10248,
                     CustomerID = "ALFKI",
@@ -27,8 +28,8 @@ namespace Tests.DataProviders
                     ShipCity = "Reims",
                     ShipPostalCode = "51100",
                     ShipCountry = "France"
-                },
-                new Order
+                }),
+                new KeyValuePair<OrderState, Order>(OrderState.New, new Order
                 {
                     OrderID = 10249,
                     CustomerID = "ANATR",
@@ -43,8 +44,8 @@ namespace Tests.DataProviders
                     ShipCity = "Münster",
                     ShipPostalCode = "44087",
                     ShipCountry = "Germany"
-                },
-                new Order
+                }),
+                new KeyValuePair<OrderState, Order>(OrderState.Completed, new Order
                 {
                     OrderID = 10250,
                     CustomerID = "ANTON",
@@ -60,8 +61,8 @@ namespace Tests.DataProviders
                     ShipCity = "Rio de Janeiro",
                     ShipPostalCode = "05454-876",
                     ShipCountry = "Brazil"
-                },
-                new Order
+                }),
+                new KeyValuePair<OrderState, Order>(OrderState.New, new Order
                 {
                     OrderID = 10251,
                     CustomerID = "AROUT",
@@ -76,8 +77,8 @@ namespace Tests.DataProviders
                     ShipCity = "Lyon",
                     ShipPostalCode = "69004",
                     ShipCountry = "France"
-                },
-                new Order
+                }),
+                new KeyValuePair<OrderState, Order>(OrderState.InProgress, new Order
                 {
                     OrderID = 10252,
                     CustomerID = "BERGS",
@@ -92,8 +93,22 @@ namespace Tests.DataProviders
                     ShipCity = "Charleroi",
                     ShipPostalCode = "B-6000",
                     ShipCountry = "Belgium"
-                }
+                })
             };
+        }
+
+        public static Dictionary<string, object> GetOrderUpdateValues() =>
+            new Dictionary<string, object>
+            {
+                {"Freight", 45.05100},
+                {"ShipCity", "Minsk"},
+            };
+
+        public static KeyValuePair<OrderState, Order> GetRandomOrder()
+        {
+            var random = new Random();
+            var orders = GetOrders().ToList();
+            return orders.ElementAt(random.Next(0, orders.Count - 1));
         }
     }
 }

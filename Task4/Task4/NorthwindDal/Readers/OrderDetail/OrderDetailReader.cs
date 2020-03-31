@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using NorthwindDal.Extensions;
 using NorthwindDal.Models;
+using NorthwindDal.Models.Product;
 using NorthwindDal.Readers.Abstractions;
 
 namespace NorthwindDal.Readers.OrderDetail

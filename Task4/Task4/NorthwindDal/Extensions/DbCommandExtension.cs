@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 
 namespace NorthwindDal.Extensions
 {
@@ -8,7 +9,7 @@ namespace NorthwindDal.Extensions
         {
             var parameter = command.CreateParameter();
             parameter.ParameterName = paramName;
-            parameter.Value = value;
+            parameter.Value = value ?? DBNull.Value;
             command.Parameters.Add(parameter);
             return command;
         }

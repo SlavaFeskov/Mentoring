@@ -16,6 +16,6 @@ namespace NorthwindDal.Models.OrderDetail
 
         public Order.Order Order { get; set; }
 
-        public Product Product { get; set; }
+        public Product.Product Product { get; set; }
     }
 }

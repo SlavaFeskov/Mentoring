@@ -6,11 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NorthwindDal.Models;
+using NorthwindDal.Models.Dto;
 using NorthwindDal.Models.Order;
 using NorthwindDal.Readers.Order;
 using NorthwindDal.Readers.OrderDetail;
 using NorthwindDal.Repositories.Order;
 using NorthwindDal.Repositories.OrderDetail;
+using NorthwindDal.Services;
 
 namespace ConsoleApp1
 {
@@ -25,22 +27,18 @@ namespace ConsoleApp1
                     row["Name"], row["Description"], row["InvariantName"], row["AssemblyQualifiedName"]);
             }
 
-            var orderReader = new OrderReader();
-            var dal = new OrderRepository(
-                "Data Source=(localdb)\\ProjectsV13;Initial Catalog=Northwind;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False",
-                "System.Data.SqlClient", orderReader);
-            var orders = dal.GetOrders().ToList();
-            var newOrders = orders.Where(o => o.OrderState == OrderState.New).ToList();
-            var inProgress = orders.Where(o => o.OrderState == OrderState.InProgress).ToList();
-            var completed = orders.Where(o => o.OrderState == OrderState.Completed).ToList();
+            var provider = DbProviderFactories.GetFactory("System.Data.SqlClient");
+            var connectionService = new ConnectionService(provider,
+                "Data Source=(localdb)\\ProjectsV13;Initial Catalog=Northwind;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+            var readerService = new ReaderService();
+            var commandBuilder = new SqlCommandBuilder();
+            var orderRepo = new OrderRepository(readerService, connectionService, commandBuilder);
+            var orderDetailRepo = new OrderDetailRepository(readerService, connectionService);
 
-            var orderId = completed.First().OrderID;
-            var dal1 = new OrderDetailRepository("Data Source=(localdb)\\ProjectsV13;Initial Catalog=Northwind;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False",
-                "System.Data.SqlClient", new OrderDetailReader(orderReader));
-            var orderDetail = dal1.GetOrderDetailsByOrderId(orderId);
-            
-            dal.Update(10328, new Dictionary<string, object> { { "Freight", 12 } });
-            
+            var orderDetails = orderDetailRepo.GetOrderDetailsByOrderId(10258);
+
+            var orders = orderRepo.TakeOrderInProgress(11078, DateTime.Parse("7/9/1996 12:00:00 AM"));
+
             Console.ReadKey();
         }
     }
