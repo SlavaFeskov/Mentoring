@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
+using NorthwindDal.Data;
 using NorthwindDal.Exceptions;
 using NorthwindDal.Extensions;
 using NorthwindDal.Models.Dto;
@@ -9,29 +9,32 @@ using NorthwindDal.Models.Order;
 using NorthwindDal.Models.Order.StoredProceduresModels;
 using NorthwindDal.Services.Abstractions;
 
+// ReSharper disable StringLiteralTypo
+
 namespace NorthwindDal.Repositories.Order
 {
     public class OrderRepository : IOrderRepository
     {
+        private const string OrdersTableName = "Northwind.Orders";
         private readonly IReaderService _readers;
         private readonly IConnectionService _connectionService;
+        private readonly ICommandBuilder _commandBuilder;
 
-        public OrderRepository(IReaderService readers, IConnectionService connectionService)
+        public OrderRepository(
+            IReaderService readers,
+            IConnectionService connectionService,
+            ICommandBuilder commandBuilder)
         {
             _readers = readers;
             _connectionService = connectionService;
+            _commandBuilder = commandBuilder;
         }
 
         public IEnumerable<Models.Order.Order> GetOrders()
         {
             using var connection = _connectionService.CreateAndOpenConnection();
-
-            using var command = connection.CreateCommand();
-            command.CommandText = "SELECT OrderID, OrderDate, RequiredDate, ShippedDate, " +
-                                  "Freight, ShipName, ShipAddress, ShipCity, ShipRegion, ShipPostalCode, " +
-                                  "ShipCountry, CustomerID, EmployeeID, ShipVia FROM Northwind.Orders";
-            command.CommandType = CommandType.Text;
-
+            using var command = _commandBuilder
+                .BuildGetManyCommand(connection, OrdersTableName, OrderQueryData.GetQueryColumns);
             using var reader = command.ExecuteReader();
             return _readers.OrderReader.ReadMultiple(reader);
         }
@@ -39,26 +42,12 @@ namespace NorthwindDal.Repositories.Order
         public Models.Order.Order Add(Models.Order.Order order)
         {
             using var connection = _connectionService.CreateAndOpenConnection();
-
-            using var command = connection.CreateCommand();
-            var orderAsPropDictionary = order.ToDictionary();
-            orderAsPropDictionary.Remove("OrderID");
-
-            foreach (var param in orderAsPropDictionary)
-            {
-                command.AddParameter($"@{param.Key}", param.Value);
-            }
-
-            var columns = string.Join(", ", orderAsPropDictionary.Keys);
-            var values = string.Join(", ", orderAsPropDictionary.Keys.Select(k => $"@{k}"));
-            command.CommandText =
-                $"INSERT INTO Northwind.Orders ({columns}) " +
-                $"VALUES ({values});" +
-                "SELECT SCOPE_IDENTITY();";
-            command.CommandType = CommandType.Text;
-
-            var orderId = (int) command.ExecuteScalar();
-            order.OrderID = orderId;
+            var orderAsPropDictionary = order.ToDictionary()
+                .Where(kv => kv.Value != null && kv.Key != "OrderID" && kv.Key != "OrderState")
+                .ToDictionary(k => k.Key, v => v.Value);
+            using var command = _commandBuilder.BuildAddCommand(connection, OrdersTableName, orderAsPropDictionary);
+            var orderId = (decimal) command.ExecuteScalar();
+            order.OrderID = (int) orderId;
 
             return order;
         }
@@ -72,35 +61,18 @@ namespace NorthwindDal.Repositories.Order
             ThrowExceptionIfOrderDateOrShippedDateIsBeingUpdatedExplicitly(values);
 
             using var connection = _connectionService.CreateAndOpenConnection();
-
-            using var command = connection.CreateCommand();
-            var parameters = new List<string>();
-            foreach (var value in values)
-            {
-                parameters.Add($"{value.Key} = @{value.Key}");
-                command.AddParameter($"@{value.Key}", value.Value);
-            }
-
-            command.AddParameter("@orderId", orderId);
-            command.CommandText = $"UPDATE Northwind.Orders SET {string.Join(", ", parameters)} " +
-                                  "WHERE OrderID = @orderId";
-            command.CommandType = CommandType.Text;
+            using var command = _commandBuilder.BuildUpdateCommand(connection, OrdersTableName, values,
+                new KeyValuePair<string, object>("OrderID", orderId));
             return command.ExecuteNonQuery();
         }
 
         public Models.Order.Order GetOrderById(int orderId)
         {
             using var connection = _connectionService.CreateAndOpenConnection();
-
-            using var command = connection.CreateCommand();
-            command.CommandText =
-                $"SELECT {string.Join(", ", typeof(Models.Order.Order).GetPropertyNames())} " +
-                "FROM Northwind.Orders " +
-                "WHERE OrderID = @orderId";
-            command.CommandType = CommandType.Text;
-            command.AddParameter("@orderId", orderId);
-
+            using var command = _commandBuilder.BuildGetSingleByIdCommand(connection, OrdersTableName,
+                OrderQueryData.GetQueryColumns, new KeyValuePair<string, object>("OrderID", orderId));
             using var reader = command.ExecuteReader();
+            reader.Read();
             var order = _readers.OrderReader.ReadSingle(reader);
             if (order == null)
             {
@@ -116,12 +88,8 @@ namespace NorthwindDal.Repositories.Order
             ThrowExceptionIfOrderInDeletedStateIsBeingDeleted(orderInDb);
 
             using var connection = _connectionService.CreateAndOpenConnection();
-
-            using var command = connection.CreateCommand();
-            command.CommandText = "DELETE FROM Northwind.Orders WHERE OrderId = @orderId";
-            command.CommandType = CommandType.Text;
-            command.AddParameter("@orderId", orderId);
-
+            using var command = _commandBuilder.BuildDeleteCommand(connection, OrdersTableName,
+                new KeyValuePair<string, object>("OrderID", orderId));
             return command.ExecuteNonQuery();
         }
 
@@ -131,13 +99,9 @@ namespace NorthwindDal.Repositories.Order
             if (orderInDb.OrderState == OrderState.New)
             {
                 using var connection = _connectionService.CreateAndOpenConnection();
-                using var command = connection.CreateCommand();
-                command.CommandText =
-                    "UPDATE Northwin.Orders SET OrderDate = @orderDate WHERE OrderID = @orderId";
-                command.CommandType = CommandType.Text;
-                command.AddParameter("@orderId", orderId);
-                command.AddParameter("@orderDate", orderDate);
-
+                using var command = _commandBuilder.BuildUpdateCommand(connection, OrdersTableName,
+                    new Dictionary<string, object> {{"OrderDate", orderDate}},
+                    new KeyValuePair<string, object>("OrderID", orderId));
                 return command.ExecuteNonQuery();
             }
 
@@ -150,14 +114,9 @@ namespace NorthwindDal.Repositories.Order
             if (orderInDb.OrderState == OrderState.InProgress)
             {
                 using var connection = _connectionService.CreateAndOpenConnection();
-
-                using var command = connection.CreateCommand();
-                command.CommandText =
-                    "UPDATE Northwin.Orders SET ShippedDate = @shippedDate WHERE OrderID = @orderId";
-                command.CommandType = CommandType.Text;
-                command.AddParameter("@orderId", orderId);
-                command.AddParameter("@shippedDate", shippedDate);
-
+                using var command = _commandBuilder.BuildUpdateCommand(connection, OrdersTableName,
+                    new Dictionary<string, object> {{"ShippedDate", shippedDate}},
+                    new KeyValuePair<string, object>("OrderID", orderId));
                 return command.ExecuteNonQuery();
             }
 
@@ -167,12 +126,8 @@ namespace NorthwindDal.Repositories.Order
         public IEnumerable<CustomerOrderHistory> GetCustomerOrderHistories(int customerId)
         {
             using var connection = _connectionService.CreateAndOpenConnection();
-
-            using var command = connection.CreateCommand();
-            command.CommandText = "Northwind.CustOrderHist";
-            command.CommandType = CommandType.StoredProcedure;
-            command.AddParameter("@CustomerID", customerId);
-
+            using var command = _commandBuilder.BuildSpCallCommand(connection, "Northwind.CustOrderHist",
+                new Dictionary<string, object> {{"CustomerID", customerId}});
             using var reader = command.ExecuteReader();
             return _readers.CustomerOrderHistoryReader.ReadMultiple(reader);
         }
@@ -180,12 +135,8 @@ namespace NorthwindDal.Repositories.Order
         public IEnumerable<CustomerOrdersDetail> GetCustomerOrdersDetails(int orderId)
         {
             using var connection = _connectionService.CreateAndOpenConnection();
-
-            using var command = connection.CreateCommand();
-            command.CommandText = "Northwind.CustOrdersDetail";
-            command.CommandType = CommandType.StoredProcedure;
-            command.AddParameter("@OrderID", orderId);
-
+            using var command = _commandBuilder.BuildSpCallCommand(connection, "Northwind.CustOrdersDetail",
+                new Dictionary<string, object> {{"OrderID", orderId}});
             using var reader = command.ExecuteReader();
             return _readers.CustomerOrderDetailsReader.ReadMultiple(reader);
         }

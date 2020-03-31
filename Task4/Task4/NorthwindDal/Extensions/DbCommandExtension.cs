@@ -1,10 +1,10 @@
-﻿using System.Data.Common;
+﻿using System.Data;
 
 namespace NorthwindDal.Extensions
 {
     public static class DbCommandExtension
     {
-        public static DbCommand AddParameter(this DbCommand command, string paramName, object value)
+        public static IDbCommand AddParameter(this IDbCommand command, string paramName, object value)
         {
             var parameter = command.CreateParameter();
             parameter.ParameterName = paramName;

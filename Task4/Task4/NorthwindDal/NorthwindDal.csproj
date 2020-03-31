@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\OrderQueryData.cs" />
     <Compile Include="Exceptions\ConnectionException.cs" />
     <Compile Include="Exceptions\RecordNotFoundException.cs" />
     <Compile Include="Extensions\DbCommandExtension.cs" />
@@ -69,10 +70,12 @@
     <Compile Include="Repositories\OrderDetail\OrderDetailRepository.cs" />
     <Compile Include="Repositories\Order\IOrderRepository.cs" />
     <Compile Include="Repositories\Order\OrderRepository.cs" />
+    <Compile Include="Services\Abstractions\ICommandBuilder.cs" />
     <Compile Include="Services\Abstractions\IConnectionService.cs" />
     <Compile Include="Services\Abstractions\IReaderService.cs" />
     <Compile Include="Services\ConnectionService.cs" />
     <Compile Include="Services\ReaderService.cs" />
+    <Compile Include="Services\SqlCommandBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

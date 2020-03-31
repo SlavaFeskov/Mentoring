@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
-using System.Data.Common;
+using System.Data;
 
 namespace NorthwindDal.Readers.Abstractions
 {
     public interface IReader<out TModel>
     {
-        TModel ReadSingle(DbDataReader reader);
+        TModel ReadSingle(IDataReader reader);
 
-        TModel ReadSingleWithOffset(DbDataReader reader, int offset);
+        TModel ReadSingleWithOffset(IDataReader reader, int offset);
 
-        IEnumerable<TModel> ReadMultiple(DbDataReader reader);
+        IEnumerable<TModel> ReadMultiple(IDataReader reader);
     }
 }

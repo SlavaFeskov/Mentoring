@@ -1,4 +1,5 @@
-﻿using System.Data.Common;
+﻿using System.Data;
+using System.Data.Common;
 using NorthwindDal.Exceptions;
 using NorthwindDal.Services.Abstractions;
 
@@ -15,7 +16,7 @@ namespace NorthwindDal.Services
             _connectionString = connectionString;
         }
 
-        public DbConnection CreateAndOpenConnection()
+        public IDbConnection CreateAndOpenConnection()
         {
             var connection = _providerFactory.CreateConnection();
             if (connection == null)

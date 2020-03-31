@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Data.Common;
+using System.Data;
 using NorthwindDal.Extensions;
 using NorthwindDal.Readers.Abstractions;
 
@@ -7,14 +7,8 @@ namespace NorthwindDal.Readers.Order
 {
     public class OrderReader : BaseReader<Models.Order.Order>
     {
-        public override Models.Order.Order ReadSingleWithOffset(DbDataReader reader, int offset)
+        public override Models.Order.Order ReadSingleWithOffset(IDataReader reader, int offset)
         {
-            reader.Read();
-            if (!reader.HasRows)
-            {
-                return null;
-            }
-
             var order = new Models.Order.Order();
             order.OrderID = reader.GetValueOrDefault<int>(0 + offset);
             order.OrderDate = reader.GetValueOrDefault<DateTime?>(1 + offset);

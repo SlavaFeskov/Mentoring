@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using NorthwindDal.Extensions;
 using NorthwindDal.Services.Abstractions;
 
 namespace NorthwindDal.Repositories.OrderDetail
@@ -29,12 +30,9 @@ namespace NorthwindDal.Repositories.OrderDetail
                                   "ON o.OrderID = od.OrderID " +
                                   "JOIN Northwind.Products as p " +
                                   "ON p.ProductID = od.ProductID " +
-                                  "WHERE od.OrderID = @p1";
+                                  "WHERE od.OrderID = @orderId";
             command.CommandType = CommandType.Text;
-            var orderIdParam = command.CreateParameter();
-            orderIdParam.ParameterName = "@p1";
-            orderIdParam.Value = orderId;
-            command.Parameters.Add(orderIdParam);
+            command.AddParameter("orderId", orderId);
 
             using var reader = command.ExecuteReader();
             return _readers.OrderDetailReader.ReadMultiple(reader);

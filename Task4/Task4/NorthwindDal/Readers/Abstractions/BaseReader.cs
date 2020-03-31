@@ -1,18 +1,18 @@
 ﻿using System.Collections.Generic;
-using System.Data.Common;
+using System.Data;
 
 namespace NorthwindDal.Readers.Abstractions
 {
     public abstract class BaseReader<TModel> : IReader<TModel>
     {
-        public virtual TModel ReadSingle(DbDataReader reader)
+        public virtual TModel ReadSingle(IDataReader reader)
         {
             return ReadSingleWithOffset(reader, 0);
         }
 
-        public abstract TModel ReadSingleWithOffset(DbDataReader reader, int offset);
+        public abstract TModel ReadSingleWithOffset(IDataReader reader, int offset);
 
-        public virtual IEnumerable<TModel> ReadMultiple(DbDataReader reader)
+        public virtual IEnumerable<TModel> ReadMultiple(IDataReader reader)
         {
             var result = new List<TModel>();
             while (reader.Read())

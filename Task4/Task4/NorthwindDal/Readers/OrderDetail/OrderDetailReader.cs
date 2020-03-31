@@ -1,4 +1,4 @@
-﻿using System.Data.Common;
+﻿using System.Data;
 using NorthwindDal.Extensions;
 using NorthwindDal.Models;
 using NorthwindDal.Readers.Abstractions;
@@ -14,7 +14,7 @@ namespace NorthwindDal.Readers.OrderDetail
             _orderReader = orderReader;
         }
 
-        public override Models.OrderDetail.OrderDetail ReadSingleWithOffset(DbDataReader reader, int offset)
+        public override Models.OrderDetail.OrderDetail ReadSingleWithOffset(IDataReader reader, int offset)
         {
             var orderDetail = new Models.OrderDetail.OrderDetail();
             orderDetail.ProductID = reader.GetValueOrDefault<int>(0 + offset);

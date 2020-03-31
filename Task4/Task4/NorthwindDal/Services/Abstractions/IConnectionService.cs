@@ -1,9 +1,9 @@
-﻿using System.Data.Common;
+﻿using System.Data;
 
 namespace NorthwindDal.Services.Abstractions
 {
     public interface IConnectionService
     {
-        DbConnection CreateAndOpenConnection();
+        IDbConnection CreateAndOpenConnection();
     }
 }
