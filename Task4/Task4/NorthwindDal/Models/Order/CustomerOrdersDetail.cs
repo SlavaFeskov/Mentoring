@@ -1,4 +1,4 @@
-﻿namespace NorthwindDal.Models.Order.StoredProceduresModels
+﻿namespace NorthwindDal.Models.Order
 {
     public class CustomerOrdersDetail
     {

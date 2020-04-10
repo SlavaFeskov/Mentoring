@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using NorthwindDal.Extensions;
+using NorthwindDal.Factories.Abstractions;
+using NorthwindDal.Models.OrderDetail;
 using NorthwindDal.Services.Abstractions;
 
 namespace NorthwindDal.Repositories.OrderDetail
@@ -8,17 +10,17 @@ namespace NorthwindDal.Repositories.OrderDetail
     public class OrderDetailRepository : IOrderDetailRepository
     {
         private readonly IReaderService _readers;
-        private readonly IConnectionService _connectionService;
+        private readonly IConnectionFactory _connectionFactory;
 
-        public OrderDetailRepository(IReaderService readers, IConnectionService connectionService)
+        public OrderDetailRepository(IReaderService readers, IConnectionFactory connectionFactory)
         {
             _readers = readers;
-            _connectionService = connectionService;
+            _connectionFactory = connectionFactory;
         }
 
-        public IEnumerable<Models.OrderDetail.OrderDetail> GetOrderDetailsByOrderId(int orderId)
+        public IEnumerable<OrderDetailModel> GetByOrderId(int orderId)
         {
-            using var connection = _connectionService.CreateAndOpenConnection();
+            using var connection = _connectionFactory.CreateAndOpenConnection();
 
             using var command = connection.CreateCommand();
             command.CommandText = "SELECT od.ProductID, od.UnitPrice, od.Quantity, od.Discount, od.OrderID, " +

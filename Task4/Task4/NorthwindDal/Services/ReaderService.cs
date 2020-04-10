@@ -1,5 +1,4 @@
 ﻿using NorthwindDal.Models.Order;
-using NorthwindDal.Models.Order.StoredProceduresModels;
 using NorthwindDal.Models.OrderDetail;
 using NorthwindDal.Readers.Abstractions;
 using NorthwindDal.Readers.Order;
@@ -11,9 +10,9 @@ namespace NorthwindDal.Services
 {
     public class ReaderService : IReaderService
     {
-        public IReader<Order> OrderReader { get; set; }
+        public IReader<OrderModel> OrderReader { get; set; }
 
-        public IReader<OrderDetail> OrderDetailReader { get; set; }
+        public IReader<OrderDetailModel> OrderDetailReader { get; set; }
 
         public IReader<CustomerOrderHistory> CustomerOrderHistoryReader { get; set; }
 

@@ -1,8 +1,11 @@
 ﻿// ReSharper disable InconsistentNaming
 
+using NorthwindDal.Models.Order;
+using NorthwindDal.Models.Product;
+
 namespace NorthwindDal.Models.OrderDetail
 {
-    public class OrderDetail
+    public class OrderDetailModel
     {
         public int OrderID { get; set; }
 
@@ -14,8 +17,8 @@ namespace NorthwindDal.Models.OrderDetail
 
         public float Discount { get; set; }
 
-        public Order.Order Order { get; set; }
+        public OrderModel OrderModel { get; set; }
 
-        public Product.Product Product { get; set; }
+        public ProductModel ProductModel { get; set; }
     }
 }

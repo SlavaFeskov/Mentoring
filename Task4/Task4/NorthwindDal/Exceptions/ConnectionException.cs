@@ -6,7 +6,9 @@ namespace NorthwindDal.Exceptions
     {
         private readonly string _message;
 
-        public override string Message => _message ?? "Unable to create new connection to DB.";
+        private string GetUnableToConnectMessage() => _message ?? "Unable to create new connection to DB.";
+
+        public override string Message => GetUnableToConnectMessage();
 
         public ConnectionException()
         {

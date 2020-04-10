@@ -1,16 +1,16 @@
 ﻿using System.Data;
 using System.Data.Common;
 using NorthwindDal.Exceptions;
-using NorthwindDal.Services.Abstractions;
+using NorthwindDal.Factories.Abstractions;
 
-namespace NorthwindDal.Services
+namespace NorthwindDal.Factories
 {
-    public class ConnectionService : IConnectionService
+    public class ConnectionFactory : IConnectionFactory
     {
         private readonly DbProviderFactory _providerFactory;
         private readonly string _connectionString;
 
-        public ConnectionService(DbProviderFactory providerFactory, string connectionString)
+        public ConnectionFactory(DbProviderFactory providerFactory, string connectionString)
         {
             _providerFactory = providerFactory;
             _connectionString = connectionString;

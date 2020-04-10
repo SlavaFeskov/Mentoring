@@ -1,27 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using NorthwindDal.Models.Dto;
-using NorthwindDal.Models.Order.StoredProceduresModels;
+﻿using System.Collections.Generic;
+using NorthwindDal.Models.Order;
 
 namespace NorthwindDal.Repositories.Order
 {
     public interface IOrderRepository
     {
-        IEnumerable<Models.Order.Order> GetOrders();
+        IEnumerable<OrderModel> GetAll();
 
-        Models.Order.Order Add(Models.Order.Order order);
+        OrderModel Add(OrderModel orderModel);
 
-        int Update(OrderDto order);
+        void Update(OrderModel order);
 
-        int Update(int orderId, IDictionary<string, object> values);
+        OrderModel GetById(int orderId);
 
-        Models.Order.Order GetOrderById(int orderId);
-
-        int Delete(int orderId);
-
-        int TakeOrderInProgress(int orderId, DateTime orderDate);
-
-        int CompleteOrder(int orderId, DateTime shippedDate);
+        void Delete(int orderId);
 
         IEnumerable<CustomerOrderHistory> GetCustomerOrderHistories(int customerId);
 

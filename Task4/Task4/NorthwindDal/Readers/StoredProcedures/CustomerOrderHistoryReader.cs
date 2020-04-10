@@ -1,6 +1,6 @@
 ﻿using System.Data;
 using NorthwindDal.Extensions;
-using NorthwindDal.Models.Order.StoredProceduresModels;
+using NorthwindDal.Models.Order;
 using NorthwindDal.Readers.Abstractions;
 
 namespace NorthwindDal.Readers.StoredProcedures

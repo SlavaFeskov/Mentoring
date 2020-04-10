@@ -1,8 +1,8 @@
 ﻿using System.Data;
 
-namespace NorthwindDal.Services.Abstractions
+namespace NorthwindDal.Factories.Abstractions
 {
-    public interface IConnectionService
+    public interface IConnectionFactory
     {
         IDbConnection CreateAndOpenConnection();
     }

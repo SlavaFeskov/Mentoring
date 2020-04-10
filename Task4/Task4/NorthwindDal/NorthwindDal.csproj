@@ -46,19 +46,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\OrderQueryData.cs" />
     <Compile Include="Exceptions\ConnectionException.cs" />
     <Compile Include="Exceptions\RecordNotFoundException.cs" />
     <Compile Include="Extensions\DbCommandExtension.cs" />
     <Compile Include="Extensions\DbDataReaderExtension.cs" />
     <Compile Include="Extensions\ReflectionExtensions.cs" />
-    <Compile Include="Models\Dto\OrderDto.cs" />
-    <Compile Include="Models\Order\Order.cs" />
-    <Compile Include="Models\OrderDetail\OrderDetail.cs" />
+    <Compile Include="Models\OrderDetail\OrderDetailModel.cs" />
+    <Compile Include="Models\Order\OrderData.cs" />
+    <Compile Include="Models\Order\OrderModel.cs" />
     <Compile Include="Models\Order\OrderState.cs" />
-    <Compile Include="Models\Order\StoredProceduresModels\CustomerOrderHistory.cs" />
-    <Compile Include="Models\Order\StoredProceduresModels\CustomerOrdersDetail.cs" />
-    <Compile Include="Models\Product\Product.cs" />
+    <Compile Include="Models\Order\CustomerOrderHistory.cs" />
+    <Compile Include="Models\Order\CustomerOrdersDetail.cs" />
+    <Compile Include="Models\Product\ProductModel.cs" />
     <Compile Include="Readers\Abstractions\BaseReader.cs" />
     <Compile Include="Readers\Abstractions\IReader.cs" />
     <Compile Include="Readers\OrderDetail\OrderDetailReader.cs" />
@@ -71,9 +70,9 @@
     <Compile Include="Repositories\Order\IOrderRepository.cs" />
     <Compile Include="Repositories\Order\OrderRepository.cs" />
     <Compile Include="Services\Abstractions\ICommandBuilder.cs" />
-    <Compile Include="Services\Abstractions\IConnectionService.cs" />
+    <Compile Include="Factories\Abstractions\IConnectionFactory.cs" />
     <Compile Include="Services\Abstractions\IReaderService.cs" />
-    <Compile Include="Services\ConnectionService.cs" />
+    <Compile Include="Factories\ConnectionFactory.cs" />
     <Compile Include="Services\ReaderService.cs" />
     <Compile Include="Services\SqlCommandBuilder.cs" />
   </ItemGroup>

@@ -6,15 +6,17 @@ namespace NorthwindDal.Exceptions
     {
         private readonly string _message;
 
-        public RecordNotFoundException(string message) : base(message)
-        {
-            _message = message;
-        }
+        private string GetRecordNotFoundMessage() => _message ?? "Record not found.";
+
+        public override string Message => GetRecordNotFoundMessage();
 
         public RecordNotFoundException()
         {
         }
 
-        public override string Message => _message ?? "Record not found.";
+        public RecordNotFoundException(string message) : base(message)
+        {
+            _message = message;
+        }
     }
 }

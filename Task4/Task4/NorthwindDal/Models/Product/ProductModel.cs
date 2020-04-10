@@ -3,7 +3,7 @@
 
 namespace NorthwindDal.Models.Product
 {
-    public class Product
+    public class ProductModel
     {
         public int ProductID { get; set; }
 

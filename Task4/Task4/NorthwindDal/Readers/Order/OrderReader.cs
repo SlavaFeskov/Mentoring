@@ -1,19 +1,21 @@
 ﻿using System;
 using System.Data;
 using NorthwindDal.Extensions;
+using NorthwindDal.Models.Order;
 using NorthwindDal.Readers.Abstractions;
+using NorthwindDal.Services.Abstractions;
 
 namespace NorthwindDal.Readers.Order
 {
-    public class OrderReader : BaseReader<Models.Order.Order>
+    public class OrderReader : BaseReader<OrderModel>
     {
-        public override Models.Order.Order ReadSingleWithOffset(IDataReader reader, int offset)
+        public override OrderModel ReadSingleWithOffset(IDataReader reader, int offset)
         {
-            var order = new Models.Order.Order();
+            var orderDate = reader.GetValueOrDefault<DateTime?>(1 + offset);
+            var shippedDate = reader.GetValueOrDefault<DateTime?>(3 + offset);
+            var order = new OrderModel(orderDate, shippedDate);
             order.OrderID = reader.GetValueOrDefault<int>(0 + offset);
-            order.OrderDate = reader.GetValueOrDefault<DateTime?>(1 + offset);
             order.RequiredDate = reader.GetValueOrDefault<DateTime?>(2 + offset);
-            order.ShippedDate = reader.GetValueOrDefault<DateTime?>(3 + offset);
             order.Freight = reader.GetValueOrDefault<decimal>(4 + offset);
             order.ShipName = reader.GetValueOrDefault<string>(5 + offset);
             order.ShipAddress = reader.GetValueOrDefault<string>(6 + offset);
