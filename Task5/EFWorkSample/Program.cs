@@ -13,21 +13,18 @@ namespace EFWorkSample
         {
             var context = new NorthwindDbContext();
             var ordersByCategory = context.OrderDetails.Where(od => od.Product.Category.CategoryName == "Seafood")
-                .Include(od => od.Order.Customer);
-            Print(ordersByCategory);
-            Console.ReadKey();
-        }
-
-        private static void Print(IEnumerable<OrderDetail> ods)
-        {
-            var newOds = ods.Take(5);
+                .Include(od => od.Order.Customer)
+                .Select(e => new
+                    {e.OrderID, e.UnitPrice, e.Quantity, e.Product.ProductName, e.Order.Customer.CompanyName });
+            var newOds = ordersByCategory.Take(5);
             foreach (var od in newOds)
             {
-                Console.WriteLine("{0} | {1} | {2} | {3} | {4}", od.Discount, od.Quantity,
-                    od.UnitPrice, od.Order.Customer.CompanyName, od.Product.ProductName);
+                Console.WriteLine("{0} | {1} | {2} | {3} | {4}", od.OrderID, od.UnitPrice,
+                    od.Quantity, od.ProductName, od.CompanyName);
             }
 
             Console.WriteLine();
+            Console.ReadKey();
         }
     }
 }
