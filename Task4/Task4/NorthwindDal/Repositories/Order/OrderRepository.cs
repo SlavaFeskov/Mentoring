@@ -69,7 +69,7 @@ namespace NorthwindDal.Repositories.Order
             var order = _readers.OrderReader.ReadSingle(reader);
             if (order == null)
             {
-                throw new RecordNotFoundException($"Order with {orderId} id was not found.");
+                throw new RecordNotFoundException();
             }
 
             return order;

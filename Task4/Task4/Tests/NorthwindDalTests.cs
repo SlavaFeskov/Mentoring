@@ -29,8 +29,8 @@ namespace Tests
             var commandMock = new Mock<IDbCommand>();
             _commandBuilderMock.Setup(m =>
                     m.BuildGetSingleByIdCommand(_connectionServiceMock.Object.CreateAndOpenConnection(),
-                        OrdersTableName,
-                        OrderData.GetPropertyNames(), new KeyValuePair<string, object>("OrderID", orderId)))
+                        OrdersTableName, OrderData.GetPropertyNames(),
+                        new KeyValuePair<string, object>("OrderID", orderId)))
                 .Returns(commandMock.Object);
             commandMock.Setup(m => m.ExecuteReader()).Returns(_dataReaderMock.Object);
             _orderReaderMock.Setup(m => m.ReadSingle(_dataReaderMock.Object))

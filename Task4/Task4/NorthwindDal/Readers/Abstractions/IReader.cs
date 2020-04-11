@@ -7,8 +7,6 @@ namespace NorthwindDal.Readers.Abstractions
     {
         TModel ReadSingle(IDataReader reader);
 
-        TModel ReadSingleWithOffset(IDataReader reader, int offset);
-
         IEnumerable<TModel> ReadMultiple(IDataReader reader);
     }
 }

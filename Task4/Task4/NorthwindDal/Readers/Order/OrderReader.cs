@@ -3,29 +3,28 @@ using System.Data;
 using NorthwindDal.Extensions;
 using NorthwindDal.Models.Order;
 using NorthwindDal.Readers.Abstractions;
-using NorthwindDal.Services.Abstractions;
 
 namespace NorthwindDal.Readers.Order
 {
     public class OrderReader : BaseReader<OrderModel>
     {
-        public override OrderModel ReadSingleWithOffset(IDataReader reader, int offset)
+        public override OrderModel ReadSingle(IDataReader reader)
         {
-            var orderDate = reader.GetValueOrDefault<DateTime?>(1 + offset);
-            var shippedDate = reader.GetValueOrDefault<DateTime?>(3 + offset);
+            var orderDate = reader.GetValueOrDefault<DateTime?>(nameof(OrderModel.OrderDate));
+            var shippedDate = reader.GetValueOrDefault<DateTime?>(nameof(OrderModel.ShippedDate));
             var order = new OrderModel(orderDate, shippedDate);
-            order.OrderID = reader.GetValueOrDefault<int>(0 + offset);
-            order.RequiredDate = reader.GetValueOrDefault<DateTime?>(2 + offset);
-            order.Freight = reader.GetValueOrDefault<decimal>(4 + offset);
-            order.ShipName = reader.GetValueOrDefault<string>(5 + offset);
-            order.ShipAddress = reader.GetValueOrDefault<string>(6 + offset);
-            order.ShipCity = reader.GetValueOrDefault<string>(7 + offset);
-            order.ShipRegion = reader.GetValueOrDefault<string>(8 + offset);
-            order.ShipPostalCode = reader.GetValueOrDefault<string>(9 + offset);
-            order.ShipCountry = reader.GetValueOrDefault<string>(10 + offset);
-            order.CustomerID = reader.GetValueOrDefault<string>(11 + offset);
-            order.EmployeeID = reader.GetValueOrDefault<int?>(12 + offset);
-            order.ShipVia = reader.GetValueOrDefault<int?>(13 + offset);
+            order.OrderID = reader.GetValueOrDefault<int>(nameof(OrderModel.OrderID));
+            order.RequiredDate = reader.GetValueOrDefault<DateTime?>(nameof(OrderModel.RequiredDate));
+            order.Freight = reader.GetValueOrDefault<decimal>(nameof(OrderModel.Freight));
+            order.ShipName = reader.GetValueOrDefault<string>(nameof(OrderModel.ShipName));
+            order.ShipAddress = reader.GetValueOrDefault<string>(nameof(OrderModel.ShipAddress));
+            order.ShipCity = reader.GetValueOrDefault<string>(nameof(OrderModel.ShipCity));
+            order.ShipRegion = reader.GetValueOrDefault<string>(nameof(OrderModel.ShipRegion));
+            order.ShipPostalCode = reader.GetValueOrDefault<string>(nameof(OrderModel.ShipPostalCode));
+            order.ShipCountry = reader.GetValueOrDefault<string>(nameof(OrderModel.ShipCountry));
+            order.CustomerID = reader.GetValueOrDefault<string>(nameof(OrderModel.CustomerID));
+            order.EmployeeID = reader.GetValueOrDefault<int?>(nameof(OrderModel.EmployeeID));
+            order.ShipVia = reader.GetValueOrDefault<int?>(nameof(OrderModel.ShipVia));
             return order;
         }
     }

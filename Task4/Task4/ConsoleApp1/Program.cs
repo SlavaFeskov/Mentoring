@@ -27,6 +27,7 @@ namespace ConsoleApp1
             var orderRepo = new OrderRepository(readerService, connectionService, commandBuilder);
             var orderDetailRepo = new OrderDetailRepository(readerService, connectionService);
             var orderDetails = orderDetailRepo.GetByOrderId(10258);
+            var order = orderRepo.GetById(10258);
 
             Console.ReadKey();
         }

@@ -11,23 +11,23 @@ namespace NorthwindDal.Readers.OrderDetail
     {
         private readonly IReader<OrderModel> _orderReader;
 
-        public OrderDetailReader(IReader<OrderModel> orderReader) : base()
+        public OrderDetailReader(IReader<OrderModel> orderReader)
         {
             _orderReader = orderReader;
         }
 
-        public override OrderDetailModel ReadSingleWithOffset(IDataReader reader, int offset)
+        public override OrderDetailModel ReadSingle(IDataReader reader)
         {
             var orderDetail = new OrderDetailModel();
-            orderDetail.ProductID = reader.GetValueOrDefault<int>(0 + offset);
-            orderDetail.UnitPrice = reader.GetValueOrDefault<decimal>(1 + offset);
-            orderDetail.Quantity = reader.GetValueOrDefault<short>(2 + offset);
-            orderDetail.Discount = reader.GetValueOrDefault<float>(3 + offset);
-            orderDetail.OrderModel = _orderReader.ReadSingleWithOffset(reader, 4 + offset);
+            orderDetail.ProductID = reader.GetValueOrDefault<int>(nameof(OrderDetailModel.ProductID));
+            orderDetail.UnitPrice = reader.GetValueOrDefault<decimal>(nameof(OrderDetailModel.UnitPrice));
+            orderDetail.Quantity = reader.GetValueOrDefault<short>(nameof(OrderDetailModel.Quantity));
+            orderDetail.Discount = reader.GetValueOrDefault<float>(nameof(OrderDetailModel.Discount));
+            orderDetail.OrderModel = _orderReader.ReadSingle(reader);
             orderDetail.OrderID = orderDetail.OrderModel.OrderID;
             orderDetail.ProductModel = new ProductModel();
             orderDetail.ProductModel.ProductID = orderDetail.ProductID;
-            orderDetail.ProductModel.ProductName = reader.GetValueOrDefault<string>(18 + offset);
+            orderDetail.ProductModel.ProductName = reader.GetValueOrDefault<string>(nameof(ProductModel.ProductName));
             return orderDetail;
         }
     }

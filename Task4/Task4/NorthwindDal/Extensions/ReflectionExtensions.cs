@@ -9,7 +9,7 @@ namespace NorthwindDal.Extensions
         public static IDictionary<string, object> ToDictionary(this object obj) => obj.GetType()
             .GetProperties().ToDictionary(p => p.Name, p => p.GetValue(obj));
 
-        public static IEnumerable<string> GetPropertyNames(this Type type) =>
+            public static IEnumerable<string> GetPropertyNames(this Type type) =>
             type.GetProperties().Select(p => p.Name);
     }
 }

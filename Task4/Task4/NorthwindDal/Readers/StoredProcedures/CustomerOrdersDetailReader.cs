@@ -7,14 +7,17 @@ namespace NorthwindDal.Readers.StoredProcedures
 {
     public class CustomerOrdersDetailReader : BaseReader<CustomerOrdersDetail>
     {
-        public override CustomerOrdersDetail ReadSingleWithOffset(IDataReader reader, int offset)
+        public override CustomerOrdersDetail ReadSingle(IDataReader reader)
         {
             var customerOrderDetailRecord = new CustomerOrdersDetail();
-            customerOrderDetailRecord.ProductName = reader.GetValueOrDefault<string>(0 + offset);
-            customerOrderDetailRecord.UnitPrice = reader.GetValueOrDefault<float>(1 + offset);
-            customerOrderDetailRecord.Quantity = reader.GetValueOrDefault<int>(2 + offset);
-            customerOrderDetailRecord.Discount = reader.GetValueOrDefault<int>(3 + offset);
-            customerOrderDetailRecord.ExtendedPrice = reader.GetValueOrDefault<decimal>(4 + offset);
+            customerOrderDetailRecord.ProductName =
+                reader.GetValueOrDefault<string>(nameof(CustomerOrdersDetail.ProductName));
+            customerOrderDetailRecord.UnitPrice =
+                reader.GetValueOrDefault<float>(nameof(CustomerOrdersDetail.UnitPrice));
+            customerOrderDetailRecord.Quantity = reader.GetValueOrDefault<int>(nameof(CustomerOrdersDetail.Quantity));
+            customerOrderDetailRecord.Discount = reader.GetValueOrDefault<int>(nameof(CustomerOrdersDetail.Discount));
+            customerOrderDetailRecord.ExtendedPrice =
+                reader.GetValueOrDefault<decimal>(nameof(CustomerOrdersDetail.ExtendedPrice));
             return customerOrderDetailRecord;
         }
     }
