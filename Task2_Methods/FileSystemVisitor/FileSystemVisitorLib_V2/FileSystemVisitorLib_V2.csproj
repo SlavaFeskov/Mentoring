@@ -9,4 +9,8 @@
     <Compile Remove="FileSystemVisitor.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="5.1.2" />
+  </ItemGroup>
+
 </Project>

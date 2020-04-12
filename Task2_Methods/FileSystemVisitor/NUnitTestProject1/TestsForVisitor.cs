@@ -2,9 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Autofac;
 using Bogus;
-using FileSystemVisitorLib_V2;
+using FileSystemVisitorLib_V2.Container;
 using FileSystemVisitorLib_V2.EventArgs;
+using FileSystemVisitorLib_V2.Models;
+using FileSystemVisitorLib_V2.Services;
+using FileSystemVisitorLib_V2.Services.Abstractions;
 using NUnit.Framework;
 
 namespace Tests
@@ -13,8 +17,8 @@ namespace Tests
     public class TestForVisitor
     {
         private DirectoryInfo CurrentDir { get; set; }
-
         private List<FileSystemInfo> _fileSystemItems;
+        private readonly IContainer _container = ContainerFactory.GetContainer();
 
         private string GenerateDirName(int length = 7)
         {
@@ -65,8 +69,8 @@ namespace Tests
         [Test]
         public void VisitorShowsAllItemsInTheInCurrentDirectoryAndSubdirectories()
         {
-            var visitor = new FileSystemVisitor2();
-            var foundObjects = visitor.GetFileSystemObjects(CurrentDir.FullName).Select(f => f.FullName).ToList();
+            var visitor = _container.Resolve<IFileSystemVisitor<FileSystemInfo>>(new NamedParameter("filter", null));
+            var foundObjects = visitor.GetFileSystemObjects(CurrentDir.FullName).Select(f => f.Info.FullName).ToList();
             Console.WriteLine(string.Join("\r\n", foundObjects));
             CollectionAssert.AreEquivalent(_fileSystemItems.Select(f => f.FullName),
                 foundObjects,
@@ -76,10 +80,10 @@ namespace Tests
         [Test]
         public void VisitorFilterTest()
         {
-            var filter = new FileSystemVisitor2.FilterDelegate(f => f.Name.Length > 8);
-            var visitor = new FileSystemVisitor2(filter);
+            var visitor = _container.Resolve<IFileSystemVisitor<FileSystemInfo>>(new NamedParameter("filter",
+                new Func<BaseObject<FileSystemInfo>, bool>(f => f.Name.Length > 8)));
             var expectedObjects = _fileSystemItems.Where(f => f.Name.Length > 8).Select(f => f.FullName).ToList();
-            var actualObjects = visitor.GetFileSystemObjects(CurrentDir.FullName).Select(f => f.FullName).ToList();
+            var actualObjects = visitor.GetFileSystemObjects(CurrentDir.FullName).Select(f => f.Info.FullName).ToList();
             CollectionAssert.AreEquivalent(expectedObjects, actualObjects,
                 $"Visitor filtered wrong items in {CurrentDir} directory and subdirectories.");
         }
@@ -87,14 +91,14 @@ namespace Tests
         [Test]
         public void FileSystemVisitorStartEndEventTest()
         {
-            var visitor = new FileSystemVisitor2();
+            var visitor = _container.Resolve<IFileSystemVisitor<FileSystemInfo>>(new NamedParameter("filter", null));
             var startTriggered = false;
             var endTriggered = false;
             EventHandler<FileSystemVisitorEventArgs> startEventHandler = (o, e) => { startTriggered = true; };
             EventHandler<FileSystemVisitorEventArgs> endEventHandler = (o, e) => { endTriggered = true; };
             visitor.Start += startEventHandler;
             visitor.Finish += endEventHandler;
-            
+
             visitor.GetFileSystemObjects(CurrentDir.FullName).First();
             Assert.True(startTriggered, "Start event wasn't fired in the beginning of the search.");
             Assert.False(endTriggered, "End event was fired in the beginning of the search.");
@@ -108,11 +112,17 @@ namespace Tests
         [Test]
         public void FileSystemObjectFileDirectoryFoundEventTest()
         {
-            var visitor = new FileSystemVisitor2();
+            var visitor = _container.Resolve<IFileSystemVisitor<FileSystemInfo>>(new NamedParameter("filter", null));
             var fileFoundCounter = 0;
             var directoryFoundCounter = 0;
-            EventHandler<FileSystemObjectFoundEventArgs> fileFoundEventHandler = (o, e) => { fileFoundCounter++; };
-            EventHandler<FileSystemObjectFoundEventArgs> directoryFoundEventHandler = (o, e) => { directoryFoundCounter++; };
+            EventHandler<FileSystemObjectFoundEventArgs<FileSystemInfo>> fileFoundEventHandler = (o, e) =>
+            {
+                fileFoundCounter++;
+            };
+            EventHandler<FileSystemObjectFoundEventArgs<FileSystemInfo>> directoryFoundEventHandler = (o, e) =>
+            {
+                directoryFoundCounter++;
+            };
             visitor.FileFound += fileFoundEventHandler;
             visitor.DirectoryFound += directoryFoundEventHandler;
 
@@ -120,28 +130,39 @@ namespace Tests
             var expectedFileFoundCounter = _fileSystemItems.Count(f => f is FileInfo);
             var expectedDirectoryFoundCounter = _fileSystemItems.Count(f => f is DirectoryInfo);
 
-            Assert.AreEqual(expectedFileFoundCounter, fileFoundCounter, "File found event was fired wrong amount of times.");
-            Assert.AreEqual(expectedDirectoryFoundCounter, directoryFoundCounter, "Directory found event was fired wrong amount of times.");
+            Assert.AreEqual(expectedFileFoundCounter, fileFoundCounter,
+                "File found event was fired wrong amount of times.");
+            Assert.AreEqual(expectedDirectoryFoundCounter, directoryFoundCounter,
+                "Directory found event was fired wrong amount of times.");
         }
 
         [Test]
         public void FileSystemObjectFileDirectoryFilteredEventTest()
         {
-            var filter = new FileSystemVisitor2.FilterDelegate(f => f.Name.Contains("x"));
-            var visitor = new FileSystemVisitor2(filter);
+            bool Filter(FileSystemInfo f) => f.Name.Contains("x");
+            var visitor = _container.Resolve<IFileSystemVisitor<FileSystemInfo>>(new NamedParameter("filter",
+                new Func<BaseObject<FileSystemInfo>, bool>(f => f.Name.Contains("x"))));
             var fileFilteredCounter = 0;
             var directoryFilteredCounter = 0;
-            EventHandler<FileSystemObjectFilteredEventArgs> fileFilteredEventHandler = (o, e) => { fileFilteredCounter++; };
-            EventHandler<FileSystemObjectFilteredEventArgs> directoryFilteredEventHandler = (o, e) => { directoryFilteredCounter++; };
+            EventHandler<FileSystemObjectFilteredEventArgs<FileSystemInfo>> fileFilteredEventHandler = (o, e) =>
+            {
+                fileFilteredCounter++;
+            };
+            EventHandler<FileSystemObjectFilteredEventArgs<FileSystemInfo>> directoryFilteredEventHandler = (o, e) =>
+            {
+                directoryFilteredCounter++;
+            };
             visitor.FileFilteredFound += fileFilteredEventHandler;
             visitor.DirectoryFilteredFound += directoryFilteredEventHandler;
 
             visitor.GetFileSystemObjects(CurrentDir.FullName).ToList();
-            var expectedFileFoundCounter = _fileSystemItems.Count(f => f is FileInfo && filter(f));
-            var expectedDirectoryFoundCounter = _fileSystemItems.Count(f => f is DirectoryInfo && filter(f));
+            var expectedFileFoundCounter = _fileSystemItems.Count(f => f is FileInfo && Filter(f));
+            var expectedDirectoryFoundCounter = _fileSystemItems.Count(f => f is DirectoryInfo && Filter(f));
 
-            Assert.AreEqual(expectedFileFoundCounter, fileFilteredCounter, "File filtered event was fired wrong amount of times.");
-            Assert.AreEqual(expectedDirectoryFoundCounter, directoryFilteredCounter, "Directory filtered event was fired wrong amount of times.");
+            Assert.AreEqual(expectedFileFoundCounter, fileFilteredCounter,
+                "File filtered event was fired wrong amount of times.");
+            Assert.AreEqual(expectedDirectoryFoundCounter, directoryFilteredCounter,
+                "Directory filtered event was fired wrong amount of times.");
         }
 
         [OneTimeTearDown]
