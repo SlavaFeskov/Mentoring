@@ -13,7 +13,7 @@ namespace BCL
     class Program
     {
         private static IWatchingService _watchingService;
-        private static readonly IContainer Container = ContainerFactory.ContainerFactory.GetContainer();
+        private static readonly IContainer Container = ContainerFactory.ContainerFactory.Create();
 
         static void Main(string[] args)
         {

@@ -9,7 +9,7 @@ namespace BCL.ContainerFactory
 
         private static readonly object LockObject = new object();
 
-        public static IContainer GetContainer()
+        public static IContainer Create()
         {
             if (_container == null)
             {
