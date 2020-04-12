@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Data;
 using System.Data.Common;
-using NorthwindDal.Factories;
-using NorthwindDal.Repositories.Order;
-using NorthwindDal.Repositories.OrderDetail;
-using NorthwindDal.Services;
+using NorthwindDal.Infrastructure.Factories;
+using NorthwindDal.Infrastructure.Repositories.Order;
+using NorthwindDal.Infrastructure.Repositories.OrderDetail;
+using NorthwindDal.Infrastructure.Services;
 
 namespace ConsoleApp1
 {

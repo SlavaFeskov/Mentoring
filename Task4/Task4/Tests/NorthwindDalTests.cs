@@ -4,12 +4,12 @@ using System.Data;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using NorthwindDal.Extensions;
-using NorthwindDal.Factories.Abstractions;
-using NorthwindDal.Models.Order;
-using NorthwindDal.Readers.Abstractions;
-using NorthwindDal.Repositories.Order;
-using NorthwindDal.Services.Abstractions;
+using NorthwindDal.Domain.Models.Order;
+using NorthwindDal.Infrastructure.Extensions;
+using NorthwindDal.Infrastructure.Factories.Abstractions;
+using NorthwindDal.Infrastructure.Readers.Abstractions;
+using NorthwindDal.Infrastructure.Repositories.Order;
+using NorthwindDal.Infrastructure.Services.Abstractions;
 using Tests.DataProviders;
 
 namespace Tests
@@ -29,7 +29,8 @@ namespace Tests
             var commandMock = new Mock<IDbCommand>();
             _commandBuilderMock.Setup(m =>
                     m.BuildGetSingleByIdCommand(_connectionServiceMock.Object.CreateAndOpenConnection(),
-                        OrdersTableName, OrderData.GetPropertyNames(),
+                        OrdersTableName,
+                        It.Is<IEnumerable<string>>(e => e.All(el => OrderData.GetPropertyNames().Contains(el))),
                         new KeyValuePair<string, object>("OrderID", orderId)))
                 .Returns(commandMock.Object);
             commandMock.Setup(m => m.ExecuteReader()).Returns(_dataReaderMock.Object);
@@ -56,8 +57,10 @@ namespace Tests
         {
             var commandMock = new Mock<IDbCommand>();
             _commandBuilderMock.Setup(m => m.BuildGetManyCommand(
-                _connectionServiceMock.Object.CreateAndOpenConnection(),
-                OrdersTableName, OrderData.GetPropertyNames())).Returns(commandMock.Object);
+                    _connectionServiceMock.Object.CreateAndOpenConnection(),
+                    OrdersTableName,
+                    It.Is<IEnumerable<string>>(e => e.All(el => OrderData.GetPropertyNames().Contains(el)))))
+                .Returns(commandMock.Object);
 
             _orderReaderMock.Setup(m => m.ReadMultiple(_dataReaderMock.Object))
                 .Returns(new List<OrderModel> {new OrderModel()});

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using NorthwindDal.Models.Order;
+using NorthwindDal.Domain.Models.Order;
 
 // ReSharper disable StringLiteralTypo
 
