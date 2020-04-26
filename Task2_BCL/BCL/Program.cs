@@ -2,15 +2,18 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
+using Autofac;
 using BCL.Configuration;
 using BCL.Configuration.Models;
 using BCL.Resources;
+using BCL.Services.Abstractions;
 
 namespace BCL
 {
     class Program
     {
-        public static Watcher Watcher { get; set; }
+        private static IWatchingService _watchingService;
+        private static readonly IContainer Container = ContainerFactory.ContainerFactory.Create();
 
         static void Main(string[] args)
         {
@@ -26,16 +29,17 @@ namespace BCL
                 Console.ReadKey();
             }
 
-            Watcher = new Watcher();
-            Watcher.FileAdded += Watcher_FileAdded;
-            Watcher.FileMove += WatcherFileMove;
-            Watcher.RuleFoundNotFound += Watcher_RuleFoundNotFound;
+            _watchingService = Container.Resolve<IWatchingService>();
+            _watchingService.FileAdded += Watcher_FileAdded;
+            _watchingService.FileMove += WatcherFileMove;
+            _watchingService.RuleFoundNotFound += Watcher_RuleFoundNotFound;
             var directoriesToWatch = new List<string>();
             foreach (DirectoryPathElement directory in configuration.DirectoriesToWatch)
             {
                 directoriesToWatch.Add(directory.DirectoryPath);
             }
-            var tasks = Watcher.Watch(directoriesToWatch);
+
+            var tasks = _watchingService.Watch(directoriesToWatch);
             Task.WaitAll(tasks.ToArray());
         }
 
@@ -56,7 +60,7 @@ namespace BCL
 
         private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
         {
-            Watcher.Interrupt();
+            _watchingService.Interrupt();
             Environment.Exit(0);
         }
     }
