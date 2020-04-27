@@ -95,8 +95,8 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
-    <Reference Include="Task5_EF">
-      <HintPath>..\..\Task5\Task5_EF\bin\Debug\Task5_EF.dll</HintPath>
+    <Reference Include="Task5_EF, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Task5_EF.1.0.0\lib\net472\Task5_EF.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>
