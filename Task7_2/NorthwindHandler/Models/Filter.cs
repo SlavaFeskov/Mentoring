@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;  
+using Task5_EF.Models;
 
 namespace NorthwindHandler.Models
 {
@@ -10,25 +13,25 @@ namespace NorthwindHandler.Models
         public int? Take { get; set; }
         public int? Skip { get; set; }
 
-        public bool IsSatisfied(OrderModel order)
+        public bool IsSatisfied(Order order)
         {
-            var result = true;
+            var checks = new List<bool>();
             if (CustomerId != null)
             {
-                result = order.CustomerID == CustomerId;
+                checks.Add(order.CustomerID == CustomerId);
             }
 
             if (DateFrom != null)
             {
-                result = order.OrderDate >= DateFrom;
+                checks.Add(order.OrderDate >= DateFrom);
             }
 
             if (DateTo != null)
             {
-                result = order.OrderDate <= DateTo;
+                checks.Add(order.OrderDate <= DateTo);
             }
 
-            return result;
+            return checks.All(c => c);
         }
     }
 }
