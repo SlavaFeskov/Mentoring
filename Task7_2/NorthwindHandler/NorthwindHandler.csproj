@@ -96,7 +96,8 @@
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
     <Reference Include="Task5_EF, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Task5_EF.1.0.0\lib\net472\Task5_EF.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>libs\Task5_EF.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>
@@ -106,6 +107,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="libs\Task5_EF.dll" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
