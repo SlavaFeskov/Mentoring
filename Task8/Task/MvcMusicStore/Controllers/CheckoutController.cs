@@ -49,7 +49,7 @@ namespace MvcMusicStore.Controllers
                 var counter = PerformanceCounterFactory.Create();
                 counter.Increment(Counters.Checkout);
 
-                _logger.Info($"User {User.Identity.Name} checked out.");
+                _logger.Debug($"User {User.Identity.Name} checked out.");
 
                 return RedirectToAction("Complete", new { id = order.OrderId });
             }

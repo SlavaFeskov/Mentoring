@@ -37,10 +37,7 @@ namespace MvcMusicStore.Controllers
             _logger = logger;
         }
 
-        private IAuthenticationManager AuthenticationManager
-        {
-            get { return HttpContext.GetOwinContext().Authentication; }
-        }
+        private IAuthenticationManager AuthenticationManager => HttpContext.GetOwinContext().Authentication;
 
         private async Task MigrateShoppingCart(string userName)
         {
@@ -79,12 +76,12 @@ namespace MvcMusicStore.Controllers
                     var counter = PerformanceCounterFactory.Create();
                     counter.Increment(Counters.SuccessfulLogIn);
 
-                    _logger.Info($"User {user.UserName} logged in.");
+                    _logger.Debug($"User {user.UserName} logged in.");
 
                     return RedirectToLocal(returnUrl);
                 }
 
-                _logger.Error($"User {model.UserName}:{model.Password} failed login.");
+                _logger.Warn($"User {model.UserName}:{model.Password} failed login.");
                 ModelState.AddModelError("", "Invalid username or password.");
             }
 
@@ -106,18 +103,18 @@ namespace MvcMusicStore.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.UserName };
+                var user = new ApplicationUser {UserName = model.UserName};
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
                     await SignInAsync(user, false);
 
-                    _logger.Info($"User {user.UserName} registered.");
+                    _logger.Debug($"User {user.UserName} registered.");
 
                     return RedirectToAction("Index", "Home");
                 }
 
-                _logger.Error($"Registration failed for user {model.UserName}:{model.Password}.");
+                _logger.Warn($"Registration failed for user {model.UserName}:{model.Password}.");
                 AddErrors(result);
             }
 
@@ -135,7 +132,7 @@ namespace MvcMusicStore.Controllers
 
             return RedirectToAction(
                 "Manage",
-                new { Message = result.Succeeded ? ManageMessageId.RemoveLoginSuccess : ManageMessageId.Error });
+                new {Message = result.Succeeded ? ManageMessageId.RemoveLoginSuccess : ManageMessageId.Error});
         }
 
         // GET: /Account/Manage
@@ -186,9 +183,13 @@ namespace MvcMusicStore.Controllers
 
                     if (result.Succeeded)
                     {
-                        return RedirectToAction("Manage", new { Message = ManageMessageId.ChangePasswordSuccess });
+                        _logger.Debug(
+                            $"User {User.Identity.Name} changed password. Old: {model.OldPassword}; New: {model.NewPassword}");
+                        return RedirectToAction("Manage", new {Message = ManageMessageId.ChangePasswordSuccess});
                     }
 
+                    _logger.Warn(
+                        $"Failed to change password for user {User.Identity.Name}. Old: {model.OldPassword}; New: {model.NewPassword}; Confirm: {model.ConfirmPassword}");
                     AddErrors(result);
                 }
             }
@@ -208,9 +209,11 @@ namespace MvcMusicStore.Controllers
 
                     if (result.Succeeded)
                     {
-                        return RedirectToAction("Manage", new { Message = ManageMessageId.SetPasswordSuccess });
+                        _logger.Debug($"User {User.Identity.Name} added password. Value: {model.NewPassword}");
+                        return RedirectToAction("Manage", new {Message = ManageMessageId.SetPasswordSuccess});
                     }
 
+                    _logger.Warn($"Failed to add password for user {User.Identity.Name}. Value: {model.NewPassword}");
                     AddErrors(result);
                 }
             }
@@ -225,7 +228,7 @@ namespace MvcMusicStore.Controllers
         public ActionResult ExternalLogin(string provider, string returnUrl)
         {
             return new ChallengeResult(provider,
-                Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnUrl }));
+                Url.Action("ExternalLoginCallback", "Account", new {ReturnUrl = returnUrl}));
         }
 
         // GET: /Account/ExternalLoginCallback
@@ -250,7 +253,7 @@ namespace MvcMusicStore.Controllers
             ViewBag.LoginProvider = loginInfo.Login.LoginProvider;
 
             return View("ExternalLoginConfirmation",
-                new ExternalLoginConfirmationViewModel { UserName = loginInfo.DefaultUserName });
+                new ExternalLoginConfirmationViewModel {UserName = loginInfo.DefaultUserName});
         }
 
         // POST: /Account/LinkLogin
@@ -269,7 +272,7 @@ namespace MvcMusicStore.Controllers
 
             if (loginInfo == null)
             {
-                return RedirectToAction("Manage", new { Message = ManageMessageId.Error });
+                return RedirectToAction("Manage", new {Message = ManageMessageId.Error});
             }
 
             var result = await _userManager.AddLoginAsync(User.Identity.GetUserId(), loginInfo.Login);
@@ -278,7 +281,7 @@ namespace MvcMusicStore.Controllers
                 return RedirectToAction("Manage");
             }
 
-            return RedirectToAction("Manage", new { Message = ManageMessageId.Error });
+            return RedirectToAction("Manage", new {Message = ManageMessageId.Error});
         }
 
         // POST: /Account/ExternalLoginConfirmation
@@ -303,7 +306,7 @@ namespace MvcMusicStore.Controllers
                     return View("ExternalLoginFailure");
                 }
 
-                var user = new ApplicationUser { UserName = model.UserName };
+                var user = new ApplicationUser {UserName = model.UserName};
 
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
@@ -330,7 +333,7 @@ namespace MvcMusicStore.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult LogOff()
         {
-            _logger.Info($"User {User.Identity.Name} logged off.");
+            _logger.Debug($"User {User.Identity.Name} logged off.");
             AuthenticationManager.SignOut();
 
             var counter = PerformanceCounterFactory.Create();
@@ -374,7 +377,7 @@ namespace MvcMusicStore.Controllers
             var identity =
                 await _userManager.CreateIdentityAsync(user, DefaultAuthenticationTypes.ApplicationCookie);
 
-            AuthenticationManager.SignIn(new AuthenticationProperties { IsPersistent = isPersistent }, identity);
+            AuthenticationManager.SignIn(new AuthenticationProperties {IsPersistent = isPersistent}, identity);
 
             await MigrateShoppingCart(user.UserName);
         }
@@ -404,7 +407,7 @@ namespace MvcMusicStore.Controllers
         private ActionResult RedirectToLocal(string returnUrl)
         {
             return Url.IsLocalUrl(returnUrl)
-                ? (ActionResult)Redirect(returnUrl)
+                ? (ActionResult) Redirect(returnUrl)
                 : RedirectToAction("Index", "Home");
         }
 
@@ -423,11 +426,12 @@ namespace MvcMusicStore.Controllers
 
             public override void ExecuteResult(ControllerContext context)
             {
-                var properties = new AuthenticationProperties { RedirectUri = _redirectUri };
+                var properties = new AuthenticationProperties {RedirectUri = _redirectUri};
                 if (_userId != null)
                 {
                     properties.Dictionary[XsrfKey] = _userId;
                 }
+
                 context.HttpContext.GetOwinContext().Authentication.Challenge(properties, _loginProvider);
             }
         }

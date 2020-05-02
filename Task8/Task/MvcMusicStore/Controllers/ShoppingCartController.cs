@@ -72,7 +72,7 @@ namespace MvcMusicStore.Controllers
                 DeleteId = id
             };
 
-            _logger.Info($"User {User.Identity.Name} removed album with Id = {id} from cart.");
+            _logger.Debug($"User {User.Identity.Name} removed album with Id = {id} from cart.");
 
             return Json(results);
         }

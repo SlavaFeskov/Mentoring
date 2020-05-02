@@ -34,5 +34,13 @@ namespace MvcMusicStore.Infrastructure.Logging
                 _log4NetLogger.Debug(message);
             }
         }
+
+        public void Warn(string message)
+        {
+            if (_log4NetLogger.IsWarnEnabled)
+            {
+                _log4NetLogger.Warn(message);
+            }
+        }
     }
 }

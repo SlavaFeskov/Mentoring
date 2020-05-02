@@ -34,7 +34,7 @@ namespace MvcMusicStore.Controllers
             
             if (album == null)
             {
-                _logger.Error($"Album with Id = {id} was not found for Details action.");
+                _logger.Warn($"Album with Id = {id} was not found for Details action.");
                 return HttpNotFound();
             }
 
@@ -57,6 +57,7 @@ namespace MvcMusicStore.Controllers
                 
                 await _storeContext.SaveChangesAsync();
                 
+                _logger.Debug($"Album {album.Genre}:{album.Artist} with Id = {album.AlbumId} was created.");
                 return RedirectToAction("Index");
             }
 
@@ -69,7 +70,7 @@ namespace MvcMusicStore.Controllers
             var album = await _storeContext.Albums.FindAsync(id);
             if (album == null)
             {
-                _logger.Error($"Album with Id = {id} was not found for Edit action.");
+                _logger.Warn($"Album with Id = {id} was not found for Edit action.");
                 return HttpNotFound();
             }
 
@@ -86,6 +87,7 @@ namespace MvcMusicStore.Controllers
 
                 await _storeContext.SaveChangesAsync();
                 
+                _logger.Debug($"Album with Id = {album.AlbumId} was changed.");
                 return RedirectToAction("Index");
             }
 
@@ -98,7 +100,7 @@ namespace MvcMusicStore.Controllers
             var album = await _storeContext.Albums.FindAsync(id);
             if (album == null)
             {
-                _logger.Error($"Album with Id = {id} was not found for Delete action.");
+                _logger.Warn($"Album with Id = {id} was not found for Delete action.");
                 return HttpNotFound();
             }
 
@@ -112,7 +114,7 @@ namespace MvcMusicStore.Controllers
             var album = await _storeContext.Albums.FindAsync(id);
             if (album == null)
             {
-                _logger.Error($"Album with Id = {id} was not found for Delete action.");
+                _logger.Warn($"Album with Id = {id} was not found for Delete action.");
                 return HttpNotFound();
             }
 
@@ -120,6 +122,7 @@ namespace MvcMusicStore.Controllers
 
             await _storeContext.SaveChangesAsync();
 
+            _logger.Debug($"Album with Id = {id} was deleted.");
             return RedirectToAction("Index");
         }
 

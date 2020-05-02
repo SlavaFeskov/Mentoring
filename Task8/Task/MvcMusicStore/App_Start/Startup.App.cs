@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using MvcMusicStore.Infrastructure.Logging;
 using MvcMusicStore.Models;
 using Owin;
 
@@ -10,6 +11,12 @@ namespace MvcMusicStore
     public partial class Startup
     {
         private const string RoleName = "Administrator";
+        private readonly ILogger _logger;
+
+        public Startup()
+        {
+            _logger = new Logger();
+        }
 
         public void ConfigureApp(IAppBuilder app)
         {
@@ -40,6 +47,7 @@ namespace MvcMusicStore
                 if (!result)
                 {
                     await roleManager.CreateAsync(role);
+                    _logger.Info("Admin role was created.");
                 }
 
                 var user = await userManager.FindByNameAsync(username);
@@ -48,6 +56,7 @@ namespace MvcMusicStore
                     user = new ApplicationUser { UserName = username };
                     await userManager.CreateAsync(user, password);
                     await userManager.AddToRoleAsync(user.Id, RoleName);
+                    _logger.Info($"Admin user was created: {username}:{password}");
                 }
             }
         }
