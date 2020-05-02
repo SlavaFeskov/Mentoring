@@ -1,0 +1,1 @@
+.\MvcMusicStore\bin\PerformanceCounterHelper.Installer.exe %cd%\MvcMusicStore\bin\MvcMusicStore.dll

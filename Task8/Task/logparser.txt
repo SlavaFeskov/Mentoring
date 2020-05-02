@@ -1,0 +1,3 @@
+SELECT Level, COUNT(*) INTO D:\Mentoring\Task8\Task\report1.html
+FROM D:\Mentoring\Task8\Task\MvcMusicStore\logs\XmlLogs.xml
+GROUP BY Level

@@ -4,6 +4,8 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
+using MvcMusicStore.Infrastructure.Logging;
+using MvcMusicStore.Infrastructure.Performance;
 using MvcMusicStore.Models;
 
 namespace MvcMusicStore.Controllers
@@ -21,16 +23,18 @@ namespace MvcMusicStore.Controllers
 
         private const string XsrfKey = "XsrfId";
 
+        private readonly ILogger _logger;
         private UserManager<ApplicationUser> _userManager;
 
-        public AccountController()
-            : this(new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext())))
+        public AccountController(ILogger logger)
+            : this(new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext())), logger)
         {
         }
 
-        public AccountController(UserManager<ApplicationUser> userManager)
+        public AccountController(UserManager<ApplicationUser> userManager, ILogger logger)
         {
             _userManager = userManager;
+            _logger = logger;
         }
 
         private IAuthenticationManager AuthenticationManager
@@ -72,9 +76,15 @@ namespace MvcMusicStore.Controllers
                 {
                     await SignInAsync(user, model.RememberMe);
 
+                    var counter = PerformanceCounterFactory.Create();
+                    counter.Increment(Counters.SuccessfulLogIn);
+
+                    _logger.Info($"User {user.UserName} logged in.");
+
                     return RedirectToLocal(returnUrl);
                 }
 
+                _logger.Error($"User {model.UserName}:{model.Password} failed login.");
                 ModelState.AddModelError("", "Invalid username or password.");
             }
 
@@ -102,9 +112,12 @@ namespace MvcMusicStore.Controllers
                 {
                     await SignInAsync(user, false);
 
+                    _logger.Info($"User {user.UserName} registered.");
+
                     return RedirectToAction("Index", "Home");
                 }
 
+                _logger.Error($"Registration failed for user {model.UserName}:{model.Password}.");
                 AddErrors(result);
             }
 
@@ -317,7 +330,11 @@ namespace MvcMusicStore.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult LogOff()
         {
+            _logger.Info($"User {User.Identity.Name} logged off.");
             AuthenticationManager.SignOut();
+
+            var counter = PerformanceCounterFactory.Create();
+            counter.Increment(Counters.SuccessfulLogOff);
 
             return RedirectToAction("Index", "Home");
         }
