@@ -2,7 +2,7 @@
 using System.IO;
 using NorthwindHandler.Models;
 
-namespace NorthwindHandler.Services.Abstractions
+namespace NorthwindHandler.Services.Abstractions.ReportGeneration
 {
     public interface IReportGenerator
     {

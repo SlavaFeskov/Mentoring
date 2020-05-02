@@ -118,13 +118,15 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Abstractions\IOrdersProvider.cs" />
     <Compile Include="Services\Abstractions\IParamsRetriever.cs" />
-    <Compile Include="Services\Abstractions\IReportGenerator.cs" />
+    <Compile Include="Services\Abstractions\ReportGeneration\IReportGenerator.cs" />
+    <Compile Include="Services\Abstractions\ReportGeneration\IReportGeneratorResolver.cs" />
     <Compile Include="Services\Abstractions\IResponseGenerator.cs" />
     <Compile Include="Services\OrdersProvider.cs" />
     <Compile Include="Services\ParamsRetriever.cs" />
+    <Compile Include="Services\ReportGeneration\ReportGeneratorResolver.cs" />
     <Compile Include="Services\ResponseGenerator.cs" />
-    <Compile Include="Services\XlsxReportGenerator.cs" />
-    <Compile Include="Services\XmlReportGenerator.cs" />
+    <Compile Include="Services\ReportGeneration\XlsxReportGenerator.cs" />
+    <Compile Include="Services\ReportGeneration\XmlReportGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

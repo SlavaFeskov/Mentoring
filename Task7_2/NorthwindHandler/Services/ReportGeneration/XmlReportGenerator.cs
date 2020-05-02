@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using NorthwindHandler.Models;
-using NorthwindHandler.Services.Abstractions;
+using NorthwindHandler.Services.Abstractions.ReportGeneration;
 
-namespace NorthwindHandler.Services
+namespace NorthwindHandler.Services.ReportGeneration
 {
     public class XmlReportGenerator : IReportGenerator
     {
