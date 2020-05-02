@@ -11,6 +11,9 @@ namespace HttpModule.Task7_1.SampleApp
 {
     public class Program
     {
+        private string GetFailedToExecuteAppMessage(string message) =>
+            $"Unable to execute program. {message}.\r\nTo see more options enter '-h'.";
+
         [Option(CommandOptionType.SingleValue, ShortName = "u")]
         public string SiteUrl { get; set; }
 
@@ -28,13 +31,18 @@ namespace HttpModule.Task7_1.SampleApp
         public bool Logging { get; set; } = true;
 
         [Option(CommandOptionType.MultipleValue, ShortName = "e")]
-        public IEnumerable<string> AllowedExtensions { get; set; }
+        public IEnumerable<string> AllowedExtensions { get; set; } = new List<string>();
 
         public static int Main(string[] args)
             => CommandLineApplication.Execute<Program>(args);
 
         private void OnExecute()
         {
+            if (!CheckArgs())
+            {
+                return;
+            }
+
             var saver = new Saver(OutputDirectory);
             var httpClientFactory = new HttpClientFactory();
             var constraints = new List<IConstraint>
@@ -64,19 +72,36 @@ namespace HttpModule.Task7_1.SampleApp
             Console.WriteLine("Finished!");
         }
 
-        private static void Downloader_ErrorOccured(object sender, ErrorEventArgs e)
+        private void Downloader_ErrorOccured(object sender, ErrorEventArgs e)
         {
             Console.WriteLine($"Error occured: {e.Message}");
         }
 
-        private static void Downloader_UriFound(object sender, UriFoundEventArgs e)
+        private void Downloader_UriFound(object sender, UriFoundEventArgs e)
         {
             Console.WriteLine($"Uri {e.Uri} was found.");
         }
 
-        private static void Saver_FileSaved(object sender, FileDownloadEvenArgs e)
+        private void Saver_FileSaved(object sender, FileDownloadEvenArgs e)
         {
             Console.WriteLine($"File from {e.Uri} was saved.");
+        }
+
+        private bool CheckArgs()
+        {
+            if (string.IsNullOrEmpty(SiteUrl))
+            {
+                Console.WriteLine(GetFailedToExecuteAppMessage("Please specify SiteUrl (-u)"));
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(OutputDirectory))
+            {
+                Console.WriteLine(GetFailedToExecuteAppMessage("Please specify OutputDirectory (-o)"));
+                return false;
+            }
+
+            return true;
         }
     }
 }
