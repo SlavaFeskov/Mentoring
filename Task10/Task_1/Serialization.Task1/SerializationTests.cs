@@ -14,14 +14,13 @@ namespace Serialization.Task1
         public void SmokeTest()
         {
             var serializer = new XmlSerializer(typeof(Catalog));
-            
+
             var path1 = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "books.xml");
             using var xmlReader = new XmlTextReader(File.OpenRead(path1));
-            
-            var data = serializer.Deserialize(xmlReader);
+            var catalog = (Catalog) serializer.Deserialize(xmlReader);
 
             var path2 = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "books_serialized.xml");
-            serializer.Serialize(File.Create(path2), data);
+            serializer.Serialize(File.Create(path2), catalog);
         }
     }
 }
