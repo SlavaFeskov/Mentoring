@@ -56,10 +56,6 @@
     <Compile Include="Models\Catalog.cs" />
     <Compile Include="Models\Constants.cs" />
     <Compile Include="Models\Genre.cs" />
-    <Compile Include="Services\Extensions\EnumExtensions.cs" />
-    <Compile Include="Services\Extensions\ReflectionExtensions.cs" />
-    <Compile Include="Services\Extensions\XmlReaderExtensions.cs" />
-    <Compile Include="Services\Extensions\XmlWriterExtensions.cs" />
     <Compile Include="SerializationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
