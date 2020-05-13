@@ -11,7 +11,7 @@ namespace Serialization.Task1.Models
         [XmlIgnore]
         public DateTime Date { get; set; }
 
-        [XmlElement("date")]
+        [XmlAttribute("date")]
         public string DateString
         {
             get => Date.ToString(Constants.DateTimeFormat);
