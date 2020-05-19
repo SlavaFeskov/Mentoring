@@ -80,7 +80,15 @@
     <Compile Include="DB\Territory.cs" />
     <Compile Include="SerializationSolutions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\NorthwindDbContextFactory.cs" />
+    <Compile Include="Serialization\DataContractSurrogate\Abstractions\DataContractSurrogate.cs" />
+    <Compile Include="Serialization\DataContractSurrogate\Abstractions\DataContractSurrogateDecorator.cs" />
+    <Compile Include="Serialization\DataContractSurrogate\CustomerDataContractSurrogateDecorator.cs" />
+    <Compile Include="Serialization\DataContractSurrogate\EmployeeDataContractSurrogateDecorator.cs" />
+    <Compile Include="Serialization\DataContractSurrogate\OrderDataContractSurrogate.cs" />
+    <Compile Include="Serialization\DataContractSurrogate\OrderDetailDataContractSurrogateDecorator.cs" />
+    <Compile Include="Serialization\DataContractSurrogate\ShipperDataContractSurrogateDecorator.cs" />
+    <Compile Include="Serialization\OrderDetailsSerializationSurrogate.cs" />
+    <Compile Include="Services\NorthwindDbContextProvider.cs" />
     <Compile Include="TestHelpers\SerializationTester.cs" />
     <Compile Include="TestHelpers\XmlDataContractSerializerTester.cs" />
   </ItemGroup>

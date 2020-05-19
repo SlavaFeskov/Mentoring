@@ -1,9 +1,14 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Task.DB;
 using Task.TestHelpers;
 using System.Runtime.Serialization;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using Task.Serialization;
+using Task.Serialization.DataContractSurrogate;
+using Task.Serialization.DataContractSurrogate.Abstractions;
 using Task.Services;
 
 namespace Task
@@ -16,7 +21,7 @@ namespace Task
         [TestInitialize]
         public void Initialize()
         {
-            _dbContext = NorthwindDbContextFactory.Create();
+            _dbContext = NorthwindDbContextProvider.Get();
         }
 
         [TestMethod]
@@ -26,7 +31,7 @@ namespace Task
 
             var tester =
                 new XmlDataContractSerializerTester<IEnumerable<Category>>(new NetDataContractSerializer(), true);
-            var categories = _dbContext.Categories.ToList();
+            var categories = _dbContext.Categories.Take(2).ToList();
 
             var c = categories.First();
 
@@ -46,15 +51,19 @@ namespace Task
             tester.SerializeAndDeserialize(products);
         }
 
-
         [TestMethod]
         public void ISerializationSurrogate()
         {
             _dbContext.Configuration.ProxyCreationEnabled = false;
 
+            var surrogateSelector = new SurrogateSelector();
+            surrogateSelector.AddSurrogate(typeof(Order_Detail), new StreamingContext(StreamingContextStates.All),
+                new OrderDetailsSerializationSurrogate(_dbContext));
+            var serializer = new NetDataContractSerializer {SurrogateSelector = surrogateSelector};
+
             var tester =
-                new XmlDataContractSerializerTester<IEnumerable<Order_Detail>>(new NetDataContractSerializer(), true);
-            var orderDetails = _dbContext.Order_Details.ToList();
+                new XmlDataContractSerializerTester<IEnumerable<Order_Detail>>(serializer, true);
+            var orderDetails = _dbContext.Order_Details.Take(2).ToList();
 
             tester.SerializeAndDeserialize(orderDetails);
         }
@@ -65,10 +74,17 @@ namespace Task
             _dbContext.Configuration.ProxyCreationEnabled = true;
             _dbContext.Configuration.LazyLoadingEnabled = true;
 
+            DataContractSurrogate surrogate = new OrderDataContractSurrogate(_dbContext);
+            surrogate = new CustomerDataContractSurrogateDecorator(surrogate);
+            surrogate = new EmployeeDataContractSurrogateDecorator(surrogate);
+            surrogate = new OrderDetailDataContractSurrogateDecorator(surrogate);
+            surrogate = new ShipperDataContractSurrogateDecorator(surrogate);
+            var serializer = new DataContractSerializer(typeof(IEnumerable<Order>),
+                new[] {typeof(Order), typeof(Customer)}, int.MaxValue, true, false, surrogate);
+
             var tester =
-                new XmlDataContractSerializerTester<IEnumerable<Order>>(
-                    new DataContractSerializer(typeof(IEnumerable<Order>)), true);
-            var orders = _dbContext.Orders.ToList();
+                new XmlDataContractSerializerTester<IEnumerable<Order>>(serializer, true);
+            var orders = _dbContext.Orders.Take(2).ToList();
 
             tester.SerializeAndDeserialize(orders);
         }

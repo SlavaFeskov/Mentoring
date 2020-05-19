@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity.Infrastructure;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using Task.Services;
@@ -29,12 +27,7 @@ namespace Task.DB
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            var dbContext = NorthwindDbContextFactory.Create();
-
-            var objectContext = ((IObjectContextAdapter) dbContext).ObjectContext;
-            objectContext.LoadProperty(this, f => f.Category);
-            objectContext.LoadProperty(this, f => f.Order_Details);
-            objectContext.LoadProperty(this, f => f.Supplier);
+            var dbContext = NorthwindDbContextProvider.Get();
 
             info.AddValue(nameof(ProductID), ProductID);
             info.AddValue(nameof(ProductName), ProductName);
@@ -46,9 +39,9 @@ namespace Task.DB
             info.AddValue(nameof(UnitsOnOrder), UnitsOnOrder);
             info.AddValue(nameof(ReorderLevel), ReorderLevel);
             info.AddValue(nameof(Discontinued), Discontinued);
-            info.AddValue(nameof(Category), Category);
-            info.AddValue(nameof(Order_Details), Order_Details);
-            info.AddValue(nameof(Supplier), Supplier);
+            info.AddValue(nameof(Category), dbContext.Categories.Single(c => c.CategoryID == CategoryID));
+            info.AddValue(nameof(Order_Details), dbContext.Order_Details.Where(od => od.ProductID == ProductID).ToList());
+            info.AddValue(nameof(Supplier), dbContext.Suppliers.Single(s => s.SupplierID == SupplierID));
         }
     }
 }
