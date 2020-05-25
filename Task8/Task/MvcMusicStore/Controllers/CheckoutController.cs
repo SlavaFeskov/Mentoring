@@ -2,6 +2,8 @@
 using System.Data.Entity;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using MvcMusicStore.Infrastructure.Logging;
+using MvcMusicStore.Infrastructure.Performance;
 using MvcMusicStore.Models;
 
 namespace MvcMusicStore.Controllers
@@ -11,7 +13,13 @@ namespace MvcMusicStore.Controllers
     {
         private const string PromoCode = "FREE";
 
+        private readonly ILogger _logger;
         private readonly MusicStoreEntities _storeContext = new MusicStoreEntities();
+
+        public CheckoutController(ILogger logger)
+        {
+            _logger = logger;
+        }
 
         // GET: /Checkout/
         public ActionResult AddressAndPayment()
@@ -37,6 +45,11 @@ namespace MvcMusicStore.Controllers
                 await ShoppingCart.GetCart(_storeContext, this).CreateOrder(order);
 
                 await _storeContext.SaveChangesAsync();
+
+                var counter = PerformanceCounterFactory.Create();
+                counter.Increment(Counters.Checkout);
+
+                _logger.Debug($"User {User.Identity.Name} checked out.");
 
                 return RedirectToAction("Complete", new { id = order.OrderId });
             }

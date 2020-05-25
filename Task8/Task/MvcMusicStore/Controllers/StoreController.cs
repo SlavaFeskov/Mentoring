@@ -2,13 +2,20 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using MvcMusicStore.Infrastructure.Logging;
 using MvcMusicStore.Models;
 
 namespace MvcMusicStore.Controllers
 {
     public class StoreController : Controller
     {
+        private readonly ILogger _logger;
         private readonly MusicStoreEntities _storeContext = new MusicStoreEntities();
+
+        public StoreController(ILogger logger)
+        {
+            _logger = logger;
+        }
 
         // GET: /Store/
         public async Task<ActionResult> Index()
@@ -26,7 +33,13 @@ namespace MvcMusicStore.Controllers
         {
             var album = await _storeContext.Albums.FindAsync(id);
 
-            return album != null ? View(album) : (ActionResult)HttpNotFound();
+            if (album != null)
+            {
+                return View(album);
+            }
+
+            _logger.Warn($"Album with Id = {id} was not found.");
+            return HttpNotFound();
         }
 
         [ChildActionOnly]
@@ -43,6 +56,7 @@ namespace MvcMusicStore.Controllers
             {
                 _storeContext.Dispose();
             }
+
             base.Dispose(disposing);
         }
     }
